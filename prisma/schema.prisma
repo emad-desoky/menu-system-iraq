@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurants Restaurant[]
+
+  @@map("users")
+}
+
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  address     String?
+  phone       String?
+  email       String?
+  password    String   @default("123")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  adminId String @map("admin_id")
+  admin   User   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  menuItems  MenuItem[]
+  categories Category[]
+
+  @@map("restaurants")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  restaurantId String     @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  menuItems MenuItem[]
+
+  @@map("categories")
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  image       String?
+  isAvailable Boolean  @default(true) @map("is_available")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  restaurantId String     @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("menu_items")
+}
+
+enum UserRole {
+  ADMIN
+  RESTAURANT
+}
