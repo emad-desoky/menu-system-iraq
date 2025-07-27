@@ -22,18 +22,36 @@ model User {
 }
 
 model Restaurant {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String  @unique
   description String?
   logo        String?
   address     String?
   phone       String?
   email       String?
-  password    String   @default("123")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  website     String?
+  password    String  @default("123")
+  isActive    Boolean @default(true) @map("is_active")
+
+  // About Us sections
+  aboutStory   String? @map("about_story")
+  aboutMission String? @map("about_mission")
+  aboutVision  String? @map("about_vision")
+  aboutChef    String? @map("about_chef")
+  aboutHistory String? @map("about_history")
+
+  // Business hours
+  hoursMonday    String? @map("hours_monday")
+  hoursTuesday   String? @map("hours_tuesday")
+  hoursWednesday String? @map("hours_wednesday")
+  hoursThursday  String? @map("hours_thursday")
+  hoursFriday    String? @map("hours_friday")
+  hoursSaturday  String? @map("hours_saturday")
+  hoursSunday    String? @map("hours_sunday")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   adminId String @map("admin_id")
   admin   User   @relation(fields: [adminId], references: [id], onDelete: Cascade)
@@ -48,6 +66,7 @@ model Category {
   id          String   @id @default(cuid())
   name        String
   description String?
+  image       String?
   sortOrder   Int      @default(0) @map("sort_order")
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -62,16 +81,25 @@ model Category {
 }
 
 model MenuItem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal @db.Decimal(10, 2)
   image       String?
-  isAvailable Boolean  @default(true) @map("is_available")
-  isActive    Boolean  @default(true) @map("is_active")
-  sortOrder   Int      @default(0) @map("sort_order")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  imageAlt    String? @map("image_alt")
+  isAvailable Boolean @default(true) @map("is_available")
+  isActive    Boolean @default(true) @map("is_active")
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  // Additional fields for better menu control
+  ingredients  String?
+  allergens    String?
+  isVegetarian Boolean @default(false) @map("is_vegetarian")
+  isVegan      Boolean @default(false) @map("is_vegan")
+  isGlutenFree Boolean @default(false) @map("is_gluten_free")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   restaurantId String     @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
