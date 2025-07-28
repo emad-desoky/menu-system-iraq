@@ -121,8 +121,10 @@ export default async function AboutPage({ params }) {
                         }}
                       ></div>
                     </div>
-                    <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed text-center">
-                      <p className="text-lg">{restaurant.aboutStory}</p>
+                    <div className="text-gray-700 leading-relaxed text-center">
+                      <p className="text-lg break-words whitespace-pre-wrap overflow-wrap-anywhere max-w-none">
+                        {restaurant.aboutStory}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -150,7 +152,7 @@ export default async function AboutPage({ params }) {
                           }}
                         ></div>
                       </div>
-                      <p className="text-gray-700 leading-relaxed text-center">
+                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
                         {restaurant.aboutMission}
                       </p>
                     </CardContent>
@@ -175,7 +177,7 @@ export default async function AboutPage({ params }) {
                           }}
                         ></div>
                       </div>
-                      <p className="text-gray-700 leading-relaxed text-center">
+                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
                         {restaurant.aboutVision}
                       </p>
                     </CardContent>
@@ -205,7 +207,7 @@ export default async function AboutPage({ params }) {
                           }}
                         ></div>
                       </div>
-                      <p className="text-gray-700 leading-relaxed text-center">
+                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
                         {restaurant.aboutChef}
                       </p>
                     </CardContent>
@@ -230,7 +232,7 @@ export default async function AboutPage({ params }) {
                           }}
                         ></div>
                       </div>
-                      <p className="text-gray-700 leading-relaxed text-center">
+                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
                         {restaurant.aboutHistory}
                       </p>
                     </CardContent>
