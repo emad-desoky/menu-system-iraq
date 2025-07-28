@@ -30,10 +30,13 @@ import {
   deleteCategory,
   deleteMenuItem,
   updateAboutUs,
+  updateAppearance,
 } from "./actions";
 
 export default function RestaurantDashboardClient({ restaurant }) {
   const [imagePreview, setImagePreview] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [bannerImagePreview, setBannerImagePreview] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -41,6 +44,28 @@ export default function RestaurantDashboardClient({ restaurant }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -85,10 +110,11 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="categories" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="menu-items">Menu Items</TabsTrigger>
             <TabsTrigger value="about">About Us</TabsTrigger>
+            <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -440,7 +466,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       variant="outline"
                                       className="text-orange-600 border-orange-600"
                                     >
-                                      ${item.price.toString()}
+                                      $
+                                      {typeof item.price === "string"
+                                        ? item.price
+                                        : item.price.toString()}
                                     </Badge>
                                     <Badge
                                       variant={
@@ -568,6 +597,162 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     className="bg-orange-600 hover:bg-orange-700"
                   >
                     Update About Us Information
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Appearance Tab */}
+          <TabsContent value="appearance">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  Restaurant Appearance
+                </CardTitle>
+                <CardDescription>
+                  Customize your restaurant&apos;s visual identity and branding
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form action={updateAppearance} className="space-y-8">
+                  <input
+                    type="hidden"
+                    name="restaurantId"
+                    value={restaurant.id}
+                  />
+
+                  {/* Logo Upload */}
+                  <div>
+                    <Label htmlFor="logo">Restaurant Logo</Label>
+                    <div className="mt-2 flex items-center space-x-4">
+                      <Input
+                        id="logo"
+                        name="logo"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        className="flex-1"
+                      />
+                      {(logoPreview || restaurant.logo) && (
+                        <div className="w-16 h-16 rounded-lg overflow-hidden border bg-white p-2">
+                          <Image
+                            src={
+                              logoPreview ||
+                              restaurant.logo ||
+                              "/placeholder.svg"
+                            }
+                            alt="Logo preview"
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Upload a square logo (recommended: 200x200px)
+                    </p>
+                  </div>
+
+                  {/* Restaurant Name */}
+                  <div>
+                    <Label htmlFor="displayName">Display Name</Label>
+                    <Input
+                      id="displayName"
+                      name="displayName"
+                      defaultValue={restaurant.name}
+                      placeholder="Restaurant display name"
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">
+                      This name will appear in the header and throughout your
+                      site
+                    </p>
+                  </div>
+
+                  {/* Banner Color */}
+                  <div>
+                    <Label htmlFor="bannerColor">Banner Color</Label>
+                    <div className="mt-2 flex items-center space-x-4">
+                      <Input
+                        id="bannerColor"
+                        name="bannerColor"
+                        type="color"
+                        defaultValue={restaurant.bannerColor || "#ea580c"}
+                        className="w-20 h-12 p-1 border rounded-lg"
+                      />
+                      <Input
+                        type="text"
+                        defaultValue={restaurant.bannerColor || "#ea580c"}
+                        placeholder="#ea580c"
+                        className="flex-1"
+                        onChange={(e) => {
+                          const colorInput =
+                            document.getElementById("bannerColor");
+                          if (colorInput) colorInput.value = e.target.value;
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Choose the primary color for your restaurant&apos;s header
+                      and accents
+                    </p>
+                  </div>
+
+                  {/* Banner Background Image */}
+                  <div>
+                    <Label htmlFor="bannerImage">
+                      Banner Background Image (Optional)
+                    </Label>
+                    <div className="mt-2 space-y-4">
+                      <Input
+                        id="bannerImage"
+                        name="bannerImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerImageChange}
+                      />
+                      {(bannerImagePreview || restaurant.bannerImage) && (
+                        <div className="w-full h-32 rounded-lg overflow-hidden border">
+                          <Image
+                            src={
+                              bannerImagePreview ||
+                              restaurant.bannerImage ||
+                              "/placeholder.svg"
+                            }
+                            alt="Banner preview"
+                            width={400}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            name="removeBannerImage"
+                            className="rounded"
+                          />
+                          <span className="text-sm text-gray-600">
+                            Remove background image
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Upload a background image for your header. It will be
+                      displayed with 75% opacity and brightness for better text
+                      readability.
+                    </p>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    Update Appearance
                   </Button>
                 </form>
               </CardContent>

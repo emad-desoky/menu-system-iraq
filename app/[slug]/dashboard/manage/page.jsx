@@ -18,6 +18,18 @@ async function getRestaurantData(slug) {
       },
     },
   });
+
+  // Convert Decimal prices to strings to avoid serialization issues
+  if (restaurant) {
+    restaurant.categories = restaurant.categories.map((category) => ({
+      ...category,
+      menuItems: category.menuItems.map((item) => ({
+        ...item,
+        price: item.price.toString(),
+      })),
+    }));
+  }
+
   return restaurant;
 }
 

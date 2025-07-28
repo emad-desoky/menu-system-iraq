@@ -26,13 +26,17 @@ model Restaurant {
   name        String
   slug        String  @unique
   description String?
-  logo        String?
+  logo        String? // Base64 encoded logo
   address     String?
   phone       String?
   email       String?
   website     String?
   password    String  @default("123")
   isActive    Boolean @default(true) @map("is_active")
+
+  // Appearance customization
+  bannerColor String? @default("#ea580c") @map("banner_color")
+  bannerImage String? @map("banner_image") // Base64 encoded banner image
 
   // About Us sections
   aboutStory   String? @map("about_story")
@@ -66,7 +70,7 @@ model Category {
   id          String   @id @default(cuid())
   name        String
   description String?
-  image       String?
+  image       String? // Base64 encoded image
   sortOrder   Int      @default(0) @map("sort_order")
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -85,7 +89,7 @@ model MenuItem {
   name        String
   description String?
   price       Decimal @db.Decimal(10, 2)
-  image       String?
+  image       String? // Base64 encoded image
   imageAlt    String? @map("image_alt")
   isAvailable Boolean @default(true) @map("is_available")
   isActive    Boolean @default(true) @map("is_active")

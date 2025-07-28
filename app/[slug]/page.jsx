@@ -33,52 +33,88 @@ export default async function RestaurantMenu({ params }) {
     notFound();
   }
 
+  const bannerStyle = {
+    backgroundColor: restaurant.bannerColor || "#ea580c",
+    backgroundImage: restaurant.bannerImage
+      ? `url(${restaurant.bannerImage})`
+      : "none",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
+
+  const overlayStyle = restaurant.bannerImage
+    ? {
+        backgroundColor: "rgba(0, 0, 0, 0.25)",
+        filter: "brightness(0.75)",
+      }
+    : {};
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-orange-600 text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <MenuIcon className="w-6 h-6 mr-4 md:hidden" />
-              <h1 className="text-2xl font-bold">E-Menu</h1>
+      <header
+        className="text-white sticky top-0 z-50 shadow-lg"
+        style={bannerStyle}
+      >
+        <div style={overlayStyle} className="w-full h-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center">
+                <MenuIcon className="w-6 h-6 mr-4 md:hidden" />
+                {restaurant.logo && (
+                  <Image
+                    src={restaurant.logo || "/placeholder.svg"}
+                    alt={`${restaurant.name} logo`}
+                    width={40}
+                    height={40}
+                    className="mr-3 rounded-lg"
+                  />
+                )}
+                <h1 className="text-2xl font-bold">
+                  {restaurant.name || "E-Menu"}
+                </h1>
+              </div>
+              <nav className="hidden md:flex space-x-8">
+                <a
+                  href="#menu"
+                  className="hover:text-orange-200 transition-colors"
+                >
+                  Menu
+                </a>
+                <Link
+                  href={`/${slug}/about`}
+                  className="hover:text-orange-200 transition-colors"
+                >
+                  About
+                </Link>
+                <a
+                  href="#contact"
+                  className="hover:text-orange-200 transition-colors"
+                >
+                  Contact
+                </a>
+              </nav>
+              <Link href={`/${slug}/dashboard`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <a
-                href="#menu"
-                className="hover:text-orange-200 transition-colors"
-              >
-                Menu
-              </a>
-              <a
-                href="#about"
-                className="hover:text-orange-200 transition-colors"
-              >
-                About
-              </a>
-              <a
-                href="#contact"
-                className="hover:text-orange-200 transition-colors"
-              >
-                Contact
-              </a>
-            </nav>
-            <Link href={`/${slug}/dashboard`}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Dashboard
-              </Button>
-            </Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="relative h-96 bg-gradient-to-r from-orange-600 to-orange-700 flex items-center justify-center">
+      <div
+        className="relative h-96 flex items-center justify-center"
+        style={bannerStyle}
+      >
+        <div style={overlayStyle} className="absolute inset-0"></div>
         <div className="text-center text-white z-10">
           <h1 className="text-5xl font-bold mb-4">{restaurant.name}</h1>
           {restaurant.description && (
@@ -87,7 +123,6 @@ export default async function RestaurantMenu({ params }) {
             </p>
           )}
         </div>
-        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
       {/* Restaurant Info */}
@@ -179,7 +214,10 @@ export default async function RestaurantMenu({ params }) {
                               {item.name}
                             </h4>
                             <span className="text-2xl font-bold text-orange-600">
-                              ${item.price.toString()}
+                              $
+                              {typeof item.price === "string"
+                                ? item.price
+                                : item.price.toString()}
                             </span>
                           </div>
                           {item.description && (
@@ -221,59 +259,6 @@ export default async function RestaurantMenu({ params }) {
               ))}
             </div>
           )}
-        </section>
-
-        {/* About Section */}
-        <section id="about" className="mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">
-            About Us
-          </h2>
-
-          <div className="grid gap-8 md:grid-cols-2">
-            {restaurant.aboutStory && (
-              <Card className="p-8">
-                <h3 className="text-2xl font-semibold mb-4 text-orange-600">
-                  Our Story
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {restaurant.aboutStory}
-                </p>
-              </Card>
-            )}
-
-            {restaurant.aboutMission && (
-              <Card className="p-8">
-                <h3 className="text-2xl font-semibold mb-4 text-orange-600">
-                  Our Mission
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {restaurant.aboutMission}
-                </p>
-              </Card>
-            )}
-
-            {restaurant.aboutVision && (
-              <Card className="p-8">
-                <h3 className="text-2xl font-semibold mb-4 text-orange-600">
-                  Our Vision
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {restaurant.aboutVision}
-                </p>
-              </Card>
-            )}
-
-            {restaurant.aboutChef && (
-              <Card className="p-8">
-                <h3 className="text-2xl font-semibold mb-4 text-orange-600">
-                  Our Chef
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {restaurant.aboutChef}
-                </p>
-              </Card>
-            )}
-          </div>
         </section>
       </main>
 
