@@ -39,5 +39,5 @@ export async function restaurantLogin(formData) {
 
   // Simple redirect without cookies
   revalidatePath("/", "layout");
-  redirect(`/restaurant/dashboard/${restaurant.slug}`);
+  redirect(`/${restaurant.slug}/dashboard/manage`);
 }
