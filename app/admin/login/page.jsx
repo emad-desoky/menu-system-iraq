@@ -46,7 +46,6 @@ export default function AdminLoginPage() {
               Sign In as Admin
             </Button>
           </form>
-
           <div className="text-center">
             <Link href="/">
               <Button variant="ghost" size="sm">
