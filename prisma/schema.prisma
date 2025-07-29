@@ -22,28 +22,39 @@ model User {
 }
 
 model Restaurant {
-  id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  description String?
-  logo        String? // Base64 encoded logo
-  address     String?
-  phone       String?
-  email       String?
-  website     String?
-  password    String  @default("123")
-  isActive    Boolean @default(true) @map("is_active")
+  id            String  @id @default(cuid())
+  name          String
+  nameAr        String? @map("name_ar")
+  nameEn        String? @map("name_en")
+  slug          String  @unique
+  description   String?
+  descriptionAr String? @map("description_ar")
+  descriptionEn String? @map("description_en")
+  logo          String? // Base64 encoded logo
+  address       String?
+  addressAr     String? @map("address_ar")
+  addressEn     String? @map("address_en")
+  phone         String?
+  email         String?
+  website       String?
+  password      String  @default("123")
+  isActive      Boolean @default(true) @map("is_active")
 
   // Appearance customization
   bannerColor String? @default("#ea580c") @map("banner_color")
   bannerImage String? @map("banner_image") // Base64 encoded banner image
 
-  // About Us sections
-  aboutStory   String? @map("about_story")
-  aboutMission String? @map("about_mission")
-  aboutVision  String? @map("about_vision")
-  aboutChef    String? @map("about_chef")
-  aboutHistory String? @map("about_history")
+  // About Us sections - Bilingual
+  aboutStoryAr   String? @map("about_story_ar")
+  aboutStoryEn   String? @map("about_story_en")
+  aboutMissionAr String? @map("about_mission_ar")
+  aboutMissionEn String? @map("about_mission_en")
+  aboutVisionAr  String? @map("about_vision_ar")
+  aboutVisionEn  String? @map("about_vision_en")
+  aboutChefAr    String? @map("about_chef_ar")
+  aboutChefEn    String? @map("about_chef_en")
+  aboutHistoryAr String? @map("about_history_ar")
+  aboutHistoryEn String? @map("about_history_en")
 
   // Google Maps URL
   googleMapsUrl String? @map("google_maps_url")
@@ -70,14 +81,18 @@ model Restaurant {
 }
 
 model Category {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  image       String? // Base64 encoded image
-  sortOrder   Int      @default(0) @map("sort_order")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  name          String
+  nameAr        String?  @map("name_ar")
+  nameEn        String?  @map("name_en")
+  description   String?
+  descriptionAr String?  @map("description_ar")
+  descriptionEn String?  @map("description_en")
+  image         String? // Base64 encoded image
+  sortOrder     Int      @default(0) @map("sort_order")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   restaurantId String     @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -88,23 +103,31 @@ model Category {
 }
 
 model MenuItem {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  salePrice   Decimal? @map("sale_price") @db.Decimal(10, 2) // Optional sale price
-  image       String? // Base64 encoded image
-  imageAlt    String?  @map("image_alt")
-  isAvailable Boolean  @default(true) @map("is_available")
-  isActive    Boolean  @default(true) @map("is_active")
-  sortOrder   Int      @default(0) @map("sort_order")
+  id            String   @id @default(cuid())
+  name          String
+  nameAr        String?  @map("name_ar")
+  nameEn        String?  @map("name_en")
+  description   String?
+  descriptionAr String?  @map("description_ar")
+  descriptionEn String?  @map("description_en")
+  price         Decimal  @db.Decimal(10, 2)
+  salePrice     Decimal? @map("sale_price") @db.Decimal(10, 2)
+  image         String? // Base64 encoded image
+  imageAlt      String?  @map("image_alt")
+  isAvailable   Boolean  @default(true) @map("is_available")
+  isActive      Boolean  @default(true) @map("is_active")
+  sortOrder     Int      @default(0) @map("sort_order")
 
   // Additional fields for better menu control
-  ingredients  String?
-  allergens    String?
-  isVegetarian Boolean @default(false) @map("is_vegetarian")
-  isVegan      Boolean @default(false) @map("is_vegan")
-  isGlutenFree Boolean @default(false) @map("is_gluten_free")
+  ingredients   String?
+  ingredientsAr String? @map("ingredients_ar")
+  ingredientsEn String? @map("ingredients_en")
+  allergens     String?
+  allergensAr   String? @map("allergens_ar")
+  allergensEn   String? @map("allergens_en")
+  isVegetarian  Boolean @default(false) @map("is_vegetarian")
+  isVegan       Boolean @default(false) @map("is_vegan")
+  isGlutenFree  Boolean @default(false) @map("is_gluten_free")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

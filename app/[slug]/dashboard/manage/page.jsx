@@ -26,6 +26,7 @@ async function getRestaurantData(slug) {
       menuItems: category.menuItems.map((item) => ({
         ...item,
         price: item.price.toString(),
+        salePrice: item.salePrice ? item.salePrice.toString() : null, // Convert salePrice to string
       })),
     }));
   }
@@ -34,7 +35,7 @@ async function getRestaurantData(slug) {
 }
 
 export default async function RestaurantManagement({ params }) {
-  const { slug } = await params;
+  const { slug } = params;
   const restaurant = await getRestaurantData(slug);
 
   if (!restaurant) {

@@ -21,7 +21,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, ArrowLeft, ExternalLink, ImageIcon } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  ArrowLeft,
+  ExternalLink,
+  ImageIcon,
+  Languages,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -41,7 +48,14 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
   const [categoryImagePreview, setCategoryImagePreview] = useState(null);
 
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
+
+  const getLocalizedText = (item, field) => {
+    if (language === "ar") {
+      return item[`${field}Ar`] || item[field] || "";
+    }
+    return item[`${field}En`] || item[field] || "";
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -106,7 +120,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {restaurant.name}
+                  {getLocalizedText(restaurant, "name")}
                 </h1>
                 <p className="text-gray-600">{t("restaurantManagement")}</p>
               </div>
@@ -147,7 +161,8 @@ export default function RestaurantDashboardClient({ restaurant }) {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle className="text-2xl">
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <Languages className="w-6 h-6 text-orange-600" />
                       {t("menuCategories")}
                     </CardTitle>
                     <CardDescription>{t("organizeMenu")}</CardDescription>
@@ -163,23 +178,82 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <form action={createCategory} className="space-y-4">
+                    <form action={createCategory} className="space-y-6">
                       <input
                         type="hidden"
                         name="restaurantId"
                         value={restaurant.id}
                       />
+
+                      {/* Bilingual Name Fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="name">{t("categoryName")}</Label>
+                          <Label
+                            htmlFor="nameAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("categoryName")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
                           <Input
-                            id="name"
-                            name="name"
-                            placeholder={t("categoryName")}
+                            id="nameAr"
+                            name="nameAr"
+                            placeholder="اسم الفئة"
                             required
                             className="mt-1"
                           />
                         </div>
+                        <div>
+                          <Label
+                            htmlFor="nameEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("categoryName")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Input
+                            id="nameEn"
+                            name="nameEn"
+                            placeholder="Category Name"
+                            required
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Bilingual Description Fields */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="descriptionAr">
+                            {t("description")} (العربية) - {t("optional")}
+                          </Label>
+                          <Textarea
+                            id="descriptionAr"
+                            name="descriptionAr"
+                            placeholder="وصف مختصر للفئة..."
+                            className="mt-1"
+                            rows={3}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="descriptionEn">
+                            {t("description")} (English) - {t("optional")}
+                          </Label>
+                          <Textarea
+                            id="descriptionEn"
+                            name="descriptionEn"
+                            placeholder="Brief description of this category..."
+                            className="mt-1"
+                            rows={3}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="sortOrder">{t("sortOrder")}</Label>
                           <Input
@@ -190,44 +264,36 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             className="mt-1"
                           />
                         </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="description">
-                          {t("description")} ({t("optional")})
-                        </Label>
-                        <Textarea
-                          id="description"
-                          name="description"
-                          placeholder={t("briefDescription")}
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="categoryImage">
-                          {t("categoryImage")}
-                        </Label>
-                        <div className="mt-1 flex items-center space-x-4">
-                          <Input
-                            id="categoryImage"
-                            name="image"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleCategoryImageChange}
-                            className="flex-1"
-                          />
-                          {categoryImagePreview && (
-                            <div className="w-16 h-16 rounded-lg overflow-hidden border">
-                              <Image
-                                src={categoryImagePreview || "/placeholder.svg"}
-                                alt="Category preview"
-                                width={64}
-                                height={64}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
+                        <div>
+                          <Label htmlFor="categoryImage">
+                            {t("categoryImage")}
+                          </Label>
+                          <div className="mt-1 flex items-center space-x-4">
+                            <Input
+                              id="categoryImage"
+                              name="image"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleCategoryImageChange}
+                              className="flex-1"
+                            />
+                            {categoryImagePreview && (
+                              <div className="w-16 h-16 rounded-lg overflow-hidden border">
+                                <Image
+                                  src={
+                                    categoryImagePreview || "/placeholder.svg"
+                                  }
+                                  alt="Category preview"
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
+
                       <Button
                         type="submit"
                         className="bg-orange-600 hover:bg-orange-700"
@@ -253,7 +319,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               <div className="w-16 h-16 rounded-lg overflow-hidden">
                                 <Image
                                   src={category.image || "/placeholder.svg"}
-                                  alt={category.name}
+                                  alt={getLocalizedText(category, "name")}
                                   width={64}
                                   height={64}
                                   className="w-full h-full object-cover"
@@ -262,19 +328,30 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             )}
                             <div>
                               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                {category.name}
+                                {getLocalizedText(category, "name")}
                               </h3>
-                              {category.description && (
+                              {getLocalizedText(category, "description") && (
                                 <p className="text-gray-600 mb-3">
-                                  {category.description}
+                                  {getLocalizedText(category, "description")}
                                 </p>
                               )}
-                              <Badge
-                                variant="outline"
-                                className="bg-orange-50 text-orange-700 border-orange-200"
-                              >
-                                {category.menuItems.length} {t("items")}
-                              </Badge>
+                              <div className="flex gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className="bg-orange-50 text-orange-700 border-orange-200"
+                                >
+                                  {category.menuItems.length} {t("items")}
+                                </Badge>
+                                {category.nameAr && category.nameEn && (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-green-50 text-green-700 border-green-200"
+                                  >
+                                    <Languages className="w-3 h-3 mr-1" />
+                                    {t("bilingual")}
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <form action={deleteCategory}>
@@ -306,7 +383,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle className="text-2xl">{t("menuItems")}</CardTitle>
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <Languages className="w-6 h-6 text-orange-600" />
+                      {t("menuItems")}
+                    </CardTitle>
                     <CardDescription>{t("manageMenuItems")}</CardDescription>
                   </div>
                 </div>
@@ -328,24 +408,83 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <form action={createMenuItem} className="space-y-4">
+                        <form action={createMenuItem} className="space-y-6">
                           <input
                             type="hidden"
                             name="restaurantId"
                             value={restaurant.id}
                           />
 
+                          {/* Bilingual Name Fields */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="name">{t("itemName")}</Label>
+                              <Label
+                                htmlFor="nameAr"
+                                className="flex items-center gap-2"
+                              >
+                                {t("itemName")} (العربية)
+                                <Badge variant="outline" className="text-xs">
+                                  AR
+                                </Badge>
+                              </Label>
                               <Input
-                                id="name"
-                                name="name"
-                                placeholder={t("itemName")}
+                                id="nameAr"
+                                name="nameAr"
+                                placeholder="اسم الطبق"
                                 required
                                 className="mt-1"
                               />
                             </div>
+                            <div>
+                              <Label
+                                htmlFor="nameEn"
+                                className="flex items-center gap-2"
+                              >
+                                {t("itemName")} (English)
+                                <Badge variant="outline" className="text-xs">
+                                  EN
+                                </Badge>
+                              </Label>
+                              <Input
+                                id="nameEn"
+                                name="nameEn"
+                                placeholder="Dish Name"
+                                required
+                                className="mt-1"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Bilingual Description Fields */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="descriptionAr">
+                                {t("description")} (العربية)
+                              </Label>
+                              <Textarea
+                                id="descriptionAr"
+                                name="descriptionAr"
+                                placeholder="وصف الطبق والمكونات والتحضير..."
+                                className="mt-1"
+                                rows={3}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="descriptionEn">
+                                {t("description")} (English)
+                              </Label>
+                              <Textarea
+                                id="descriptionEn"
+                                name="descriptionEn"
+                                placeholder="Describe the dish, ingredients, preparation..."
+                                className="mt-1"
+                                rows={3}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Price Fields */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                               <Label htmlFor="price">{t("price")} ($)</Label>
                               <Input
@@ -370,50 +509,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 placeholder="15.99"
                                 className="mt-1"
                               />
-                              <p className="text-xs text-gray-500 mt-1">
-                                {t("leaveEmptyIfNo")}
-                              </p>
                             </div>
-                          </div>
-
-                          <div>
-                            <Label htmlFor="description">
-                              {t("description")}
-                            </Label>
-                            <Textarea
-                              id="description"
-                              name="description"
-                              placeholder={t("description")}
-                              className="mt-1"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="image">{t("itemImage")}</Label>
-                            <div className="mt-1 flex items-center space-x-4">
-                              <Input
-                                id="image"
-                                name="image"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="flex-1"
-                              />
-                              {imagePreview && (
-                                <div className="w-16 h-16 rounded-lg overflow-hidden border">
-                                  <Image
-                                    src={imagePreview || "/placeholder.svg"}
-                                    alt="Preview"
-                                    width={64}
-                                    height={64}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
                               <Label htmlFor="categoryId">
                                 {t("categories")}
@@ -428,30 +524,131 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       key={category.id}
                                       value={category.id}
                                     >
-                                      {category.name}
+                                      {getLocalizedText(category, "name")}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             </div>
+                          </div>
+
+                          {/* Bilingual Ingredients & Allergens */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="isAvailable">
-                                {t("availability")}
+                              <Label htmlFor="ingredientsAr">
+                                {t("ingredients")} (العربية) - {t("optional")}
                               </Label>
-                              <Select name="isAvailable" defaultValue="true">
-                                <SelectTrigger className="mt-1">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="true">
-                                    {t("available")}
-                                  </SelectItem>
-                                  <SelectItem value="false">
-                                    {t("notAvailable")}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <Textarea
+                                id="ingredientsAr"
+                                name="ingredientsAr"
+                                placeholder="المكونات..."
+                                className="mt-1"
+                                rows={2}
+                              />
                             </div>
+                            <div>
+                              <Label htmlFor="ingredientsEn">
+                                {t("ingredients")} (English) - {t("optional")}
+                              </Label>
+                              <Textarea
+                                id="ingredientsEn"
+                                name="ingredientsEn"
+                                placeholder="Ingredients..."
+                                className="mt-1"
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="allergensAr">
+                                {t("allergens")} (العربية) - {t("optional")}
+                              </Label>
+                              <Textarea
+                                id="allergensAr"
+                                name="allergensAr"
+                                placeholder="مسببات الحساسية..."
+                                className="mt-1"
+                                rows={2}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="allergensEn">
+                                {t("allergens")} (English) - {t("optional")}
+                              </Label>
+                              <Textarea
+                                id="allergensEn"
+                                name="allergensEn"
+                                placeholder="Allergens..."
+                                className="mt-1"
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Image and Options */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="image">{t("itemImage")}</Label>
+                              <div className="mt-1 flex items-center space-x-4">
+                                <Input
+                                  id="image"
+                                  name="image"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageChange}
+                                  className="flex-1"
+                                />
+                                {imagePreview && (
+                                  <div className="w-16 h-16 rounded-lg overflow-hidden border">
+                                    <Image
+                                      src={imagePreview || "/placeholder.svg"}
+                                      alt="Preview"
+                                      width={64}
+                                      height={64}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="isAvailable">
+                                  {t("availability")}
+                                </Label>
+                                <Select name="isAvailable" defaultValue="true">
+                                  <SelectTrigger className="mt-1">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="true">
+                                      {t("available")}
+                                    </SelectItem>
+                                    <SelectItem value="false">
+                                      {t("notAvailable")}
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label htmlFor="sortOrder">
+                                  {t("sortOrder")}
+                                </Label>
+                                <Input
+                                  id="sortOrder"
+                                  name="sortOrder"
+                                  type="number"
+                                  defaultValue="0"
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Dietary Options */}
+                          <div className="grid grid-cols-3 gap-4">
                             <div>
                               <Label htmlFor="isVegetarian">
                                 {t("vegetarian")}
@@ -462,23 +659,47 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="true">
-                                    {t("vegetarian")}
+                                    {t("yes")}
                                   </SelectItem>
-                                  <SelectItem value="false">لا</SelectItem>
+                                  <SelectItem value="false">
+                                    {t("no")}
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                             <div>
-                              <Label htmlFor="sortOrder">
-                                {t("sortOrder")}
+                              <Label htmlFor="isVegan">{t("vegan")}</Label>
+                              <Select name="isVegan" defaultValue="false">
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">
+                                    {t("yes")}
+                                  </SelectItem>
+                                  <SelectItem value="false">
+                                    {t("no")}
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="isGlutenFree">
+                                {t("glutenFree")}
                               </Label>
-                              <Input
-                                id="sortOrder"
-                                name="sortOrder"
-                                type="number"
-                                defaultValue="0"
-                                className="mt-1"
-                              />
+                              <Select name="isGlutenFree" defaultValue="false">
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">
+                                    {t("yes")}
+                                  </SelectItem>
+                                  <SelectItem value="false">
+                                    {t("no")}
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
 
@@ -498,7 +719,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       {restaurant.categories.map((category) => (
                         <div key={category.id}>
                           <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                            {category.name}
+                            {getLocalizedText(category, "name")}
                             <Badge variant="outline" className="ml-2">
                               {category.menuItems.length} {t("items")}
                             </Badge>
@@ -513,7 +734,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                   {item.image ? (
                                     <Image
                                       src={item.image || "/placeholder.svg"}
-                                      alt={item.imageAlt || item.name}
+                                      alt={
+                                        item.imageAlt ||
+                                        getLocalizedText(item, "name")
+                                      }
                                       fill
                                       className="object-cover rounded-t-lg"
                                     />
@@ -526,7 +750,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 <CardContent className="p-4">
                                   <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-semibold text-gray-900">
-                                      {item.name}
+                                      {getLocalizedText(item, "name")}
                                     </h4>
                                     <form action={deleteMenuItem}>
                                       <input
@@ -543,9 +767,9 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       </Button>
                                     </form>
                                   </div>
-                                  {item.description && (
+                                  {getLocalizedText(item, "description") && (
                                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                      {item.description}
+                                      {getLocalizedText(item, "description")}
                                     </p>
                                   )}
                                   <div className="flex flex-wrap gap-1 mb-2">
@@ -583,12 +807,13 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                         ? t("available")
                                         : t("notAvailable")}
                                     </Badge>
-                                    {item.isVegetarian && (
+                                    {item.nameAr && item.nameEn && (
                                       <Badge
                                         variant="outline"
-                                        className="text-green-600 border-green-600"
+                                        className="bg-green-50 text-green-700 border-green-200"
                                       >
-                                        {t("vegetarian")}
+                                        <Languages className="w-3 h-3 mr-1" />
+                                        {t("bilingual")}
                                       </Badge>
                                     )}
                                   </div>
@@ -598,7 +823,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           </div>
                           {category.menuItems.length === 0 && (
                             <p className="text-gray-500 text-center py-8 bg-gray-50 rounded-lg">
-                              لا توجد عناصر في هذه الفئة بعد.
+                              {t("noItemsInCategory")}
                             </p>
                           )}
                         </div>
@@ -614,79 +839,226 @@ export default function RestaurantDashboardClient({ restaurant }) {
           <TabsContent value="about">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Languages className="w-6 h-6 text-orange-600" />
                   {t("aboutUsInformation")}
                 </CardTitle>
                 <CardDescription>{t("tellCustomersAbout")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <form action={updateAboutUs} className="space-y-6">
+                <form action={updateAboutUs} className="space-y-8">
                   <input
                     type="hidden"
                     name="restaurantId"
                     value={restaurant.id}
                   />
 
-                  <div className="grid gap-6 md:grid-cols-2">
+                  {/* Our Story - Bilingual */}
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <Label htmlFor="aboutStory">{t("ourStory")}</Label>
+                      <Label
+                        htmlFor="aboutStoryAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourStory")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
                       <Textarea
-                        id="aboutStory"
-                        name="aboutStory"
-                        defaultValue={restaurant.aboutStory || ""}
-                        placeholder={t("tellStoryHow")}
+                        id="aboutStoryAr"
+                        name="aboutStoryAr"
+                        defaultValue={restaurant.aboutStoryAr || ""}
+                        placeholder="احك قصة كيف بدأ مطعمك..."
                         rows={4}
                         className="mt-1"
                       />
                     </div>
-
                     <div>
-                      <Label htmlFor="aboutMission">{t("ourMission")}</Label>
+                      <Label
+                        htmlFor="aboutStoryEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourStory")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
                       <Textarea
-                        id="aboutMission"
-                        name="aboutMission"
-                        defaultValue={restaurant.aboutMission || ""}
-                        placeholder={t("whatIsRestaurantMission")}
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="aboutVision">{t("ourVision")}</Label>
-                      <Textarea
-                        id="aboutVision"
-                        name="aboutVision"
-                        defaultValue={restaurant.aboutVision || ""}
-                        placeholder={t("whatIsVisionFuture")}
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="aboutChef">{t("ourChef")}</Label>
-                      <Textarea
-                        id="aboutChef"
-                        name="aboutChef"
-                        defaultValue={restaurant.aboutChef || ""}
-                        placeholder={t("tellCustomersAboutChef")}
+                        id="aboutStoryEn"
+                        name="aboutStoryEn"
+                        defaultValue={restaurant.aboutStoryEn || ""}
+                        placeholder="Tell the story of how your restaurant began..."
                         rows={4}
                         className="mt-1"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="aboutHistory">{t("ourHistory")}</Label>
-                    <Textarea
-                      id="aboutHistory"
-                      name="aboutHistory"
-                      defaultValue={restaurant.aboutHistory || ""}
-                      placeholder={t("shareHistoryHeritage")}
-                      rows={4}
-                      className="mt-1"
-                    />
+                  {/* Mission & Vision - Bilingual */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label
+                        htmlFor="aboutMissionAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourMission")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutMissionAr"
+                        name="aboutMissionAr"
+                        defaultValue={restaurant.aboutMissionAr || ""}
+                        placeholder="ما هي مهمة مطعمك؟"
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="aboutMissionEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourMission")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutMissionEn"
+                        name="aboutMissionEn"
+                        defaultValue={restaurant.aboutMissionEn || ""}
+                        placeholder="What is your restaurant's mission?"
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label
+                        htmlFor="aboutVisionAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourVision")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutVisionAr"
+                        name="aboutVisionAr"
+                        defaultValue={restaurant.aboutVisionAr || ""}
+                        placeholder="ما هي رؤيتك للمستقبل؟"
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="aboutVisionEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourVision")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutVisionEn"
+                        name="aboutVisionEn"
+                        defaultValue={restaurant.aboutVisionEn || ""}
+                        placeholder="What is your vision for the future?"
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Chef & History - Bilingual */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label
+                        htmlFor="aboutChefAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourChef")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutChefAr"
+                        name="aboutChefAr"
+                        defaultValue={restaurant.aboutChefAr || ""}
+                        placeholder="أخبر العملاء عن الشيف الرئيسي..."
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="aboutChefEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourChef")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutChefEn"
+                        name="aboutChefEn"
+                        defaultValue={restaurant.aboutChefEn || ""}
+                        placeholder="Tell customers about your head chef..."
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label
+                        htmlFor="aboutHistoryAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourHistory")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutHistoryAr"
+                        name="aboutHistoryAr"
+                        defaultValue={restaurant.aboutHistoryAr || ""}
+                        placeholder="شارك تاريخ وتراث مطعمك..."
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="aboutHistoryEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("ourHistory")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
+                      <Textarea
+                        id="aboutHistoryEn"
+                        name="aboutHistoryEn"
+                        defaultValue={restaurant.aboutHistoryEn || ""}
+                        placeholder="Share the history and heritage of your restaurant..."
+                        rows={4}
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -733,6 +1105,46 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     value={restaurant.id}
                   />
 
+                  {/* Bilingual Restaurant Name */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label
+                        htmlFor="displayNameAr"
+                        className="flex items-center gap-2"
+                      >
+                        {t("displayName")} (العربية)
+                        <Badge variant="outline" className="text-xs">
+                          AR
+                        </Badge>
+                      </Label>
+                      <Input
+                        id="displayNameAr"
+                        name="displayNameAr"
+                        defaultValue={restaurant.nameAr || restaurant.name}
+                        placeholder="اسم المطعم المعروض"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="displayNameEn"
+                        className="flex items-center gap-2"
+                      >
+                        {t("displayName")} (English)
+                        <Badge variant="outline" className="text-xs">
+                          EN
+                        </Badge>
+                      </Label>
+                      <Input
+                        id="displayNameEn"
+                        name="displayNameEn"
+                        defaultValue={restaurant.nameEn || restaurant.name}
+                        placeholder="Restaurant display name"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
                   {/* Logo Upload */}
                   <div>
                     <Label htmlFor="logo">{t("restaurantLogo")}</Label>
@@ -763,21 +1175,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </div>
                     <p className="text-xs text-gray-600 mt-1">
                       {t("uploadSquareLogo")}
-                    </p>
-                  </div>
-
-                  {/* Restaurant Name */}
-                  <div>
-                    <Label htmlFor="displayName">{t("displayName")}</Label>
-                    <Input
-                      id="displayName"
-                      name="displayName"
-                      defaultValue={restaurant.name}
-                      placeholder={t("displayName")}
-                      className="mt-1"
-                    />
-                    <p className="text-xs text-gray-600 mt-1">
-                      هذا الاسم سيظهر في الرأس وفي جميع أنحاء موقعك
                     </p>
                   </div>
 

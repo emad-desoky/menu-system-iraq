@@ -17,8 +17,14 @@ export async function createCategory(formData) {
   }
 
   const data = {
-    name: formData.get("name"),
-    description: formData.get("description") || null,
+    name:
+      formData.get("nameAr") || formData.get("nameEn") || "Unnamed Category",
+    nameAr: formData.get("nameAr"),
+    nameEn: formData.get("nameEn"),
+    description:
+      formData.get("descriptionAr") || formData.get("descriptionEn") || null,
+    descriptionAr: formData.get("descriptionAr") || null,
+    descriptionEn: formData.get("descriptionEn") || null,
     image: imageData,
     sortOrder: Number.parseInt(formData.get("sortOrder")) || 0,
     restaurantId: formData.get("restaurantId"),
@@ -52,19 +58,32 @@ export async function createMenuItem(formData) {
     salePrice && salePrice !== "" ? Number.parseFloat(salePrice) : null;
 
   const data = {
-    name: formData.get("name"),
-    description: formData.get("description") || null,
+    name: formData.get("nameAr") || formData.get("nameEn") || "Unnamed Item",
+    nameAr: formData.get("nameAr"),
+    nameEn: formData.get("nameEn"),
+    description:
+      formData.get("descriptionAr") || formData.get("descriptionEn") || null,
+    descriptionAr: formData.get("descriptionAr") || null,
+    descriptionEn: formData.get("descriptionEn") || null,
     price: Number.parseFloat(formData.get("price")),
     salePrice: salePriceValue,
     isAvailable: formData.get("isAvailable") === "true",
     isVegetarian: formData.get("isVegetarian") === "true",
     isVegan: formData.get("isVegan") === "true",
     isGlutenFree: formData.get("isGlutenFree") === "true",
+    ingredients:
+      formData.get("ingredientsAr") || formData.get("ingredientsEn") || null,
+    ingredientsAr: formData.get("ingredientsAr") || null,
+    ingredientsEn: formData.get("ingredientsEn") || null,
+    allergens:
+      formData.get("allergensAr") || formData.get("allergensEn") || null,
+    allergensAr: formData.get("allergensAr") || null,
+    allergensEn: formData.get("allergensEn") || null,
     sortOrder: Number.parseInt(formData.get("sortOrder")) || 0,
     restaurantId: formData.get("restaurantId"),
     categoryId: formData.get("categoryId"),
     image: imageData,
-    imageAlt: formData.get("name"),
+    imageAlt: formData.get("nameEn") || formData.get("nameAr"),
   };
 
   try {
@@ -134,11 +153,16 @@ export async function updateAboutUs(formData) {
   }
 
   const data = {
-    aboutStory: formData.get("aboutStory") || null,
-    aboutMission: formData.get("aboutMission") || null,
-    aboutVision: formData.get("aboutVision") || null,
-    aboutChef: formData.get("aboutChef") || null,
-    aboutHistory: formData.get("aboutHistory") || null,
+    aboutStoryAr: formData.get("aboutStoryAr") || null,
+    aboutStoryEn: formData.get("aboutStoryEn") || null,
+    aboutMissionAr: formData.get("aboutMissionAr") || null,
+    aboutMissionEn: formData.get("aboutMissionEn") || null,
+    aboutVisionAr: formData.get("aboutVisionAr") || null,
+    aboutVisionEn: formData.get("aboutVisionEn") || null,
+    aboutChefAr: formData.get("aboutChefAr") || null,
+    aboutChefEn: formData.get("aboutChefEn") || null,
+    aboutHistoryAr: formData.get("aboutHistoryAr") || null,
+    aboutHistoryEn: formData.get("aboutHistoryEn") || null,
     googleMapsUrl: googleMapsUrl,
   };
 
@@ -185,7 +209,12 @@ export async function updateAppearance(formData) {
   const removeBannerImage = formData.get("removeBannerImage") === "on";
 
   const data = {
-    name: formData.get("displayName"),
+    name:
+      formData.get("displayNameAr") ||
+      formData.get("displayNameEn") ||
+      formData.get("displayName"),
+    nameAr: formData.get("displayNameAr"),
+    nameEn: formData.get("displayNameEn"),
     bannerColor: formData.get("bannerColor"),
   };
 

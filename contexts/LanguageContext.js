@@ -14,7 +14,7 @@ const translations = {
 
     // Admin Dashboard
     adminDashboard: "لوحة تحكم المدير",
-    manageAllRestaurants: "إدارة جميع المطاعم",
+    manageAllRestaurants: "إدارة جميع المطاعم في النظام",
     addNewRestaurant: "إضافة مطعم جديد",
     restaurantName: "اسم المطعم",
     restaurantPassword: "كلمة مرور المطعم",
@@ -56,6 +56,8 @@ const translations = {
     glutenFree: "خالي من الجلوتين",
     createCategoryFirst:
       "يرجى إنشاء فئة واحدة على الأقل قبل إضافة عناصر القائمة.",
+    noItemsInCategory: "لا توجد عناصر في هذه الفئة بعد.",
+    noItemsFound: "لم يتم العثور على عناصر.",
 
     // Common
     name: "الاسم",
@@ -78,6 +80,9 @@ const translations = {
     checkout: "الدفع",
     emptyCart: "السلة فارغة",
     total: "المجموع",
+    yes: "نعم",
+    no: "لا",
+    bilingual: "ثنائي اللغة",
 
     // Menu
     ourMenu: "قائمتنا",
@@ -243,6 +248,8 @@ const translations = {
     glutenFree: "Gluten Free",
     createCategoryFirst:
       "Please create at least one category before adding menu items.",
+    noItemsInCategory: "No items in this category yet.",
+    noItemsFound: "No items found.",
 
     // Common
     name: "Name",
@@ -265,6 +272,9 @@ const translations = {
     checkout: "Checkout",
     emptyCart: "Your cart is empty",
     total: "Total",
+    yes: "Yes",
+    no: "No",
+    bilingual: "Bilingual",
 
     // Menu
     ourMenu: "Our Menu",
