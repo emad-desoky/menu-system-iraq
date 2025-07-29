@@ -108,13 +108,38 @@ export async function deleteMenuItem(formData) {
 
 export async function updateAboutUs(formData) {
   const restaurantId = formData.get("restaurantId");
+  let googleMapsUrl = formData.get("googleMapsUrl") || null;
+
+  // Handle different Google Maps URL formats
+  if (googleMapsUrl) {
+    // If it's a goo.gl link, keep it as is for direct linking
+    if (
+      googleMapsUrl.includes("goo.gl") ||
+      googleMapsUrl.includes("maps.app.goo.gl")
+    ) {
+      // Keep the original URL for direct linking
+    } else if (
+      googleMapsUrl.includes("google.com/maps") &&
+      !googleMapsUrl.includes("embed")
+    ) {
+      // Convert regular Google Maps URL to embed URL
+      const urlParams = new URLSearchParams(googleMapsUrl.split("?")[1]);
+      const query = urlParams.get("q") || urlParams.get("query");
+      if (query) {
+        googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(
+          query
+        )}`;
+      }
+    }
+  }
+
   const data = {
     aboutStory: formData.get("aboutStory") || null,
     aboutMission: formData.get("aboutMission") || null,
     aboutVision: formData.get("aboutVision") || null,
     aboutChef: formData.get("aboutChef") || null,
     aboutHistory: formData.get("aboutHistory") || null,
-    googleMapsUrl: formData.get("googleMapsUrl") || null,
+    googleMapsUrl: googleMapsUrl,
   };
 
   try {

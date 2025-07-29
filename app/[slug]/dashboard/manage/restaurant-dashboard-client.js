@@ -24,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, ArrowLeft, ExternalLink, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 import {
   createCategory,
   createMenuItem,
@@ -38,6 +40,8 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
   const [categoryImagePreview, setCategoryImagePreview] = useState(null);
+
+  const { t, isRTL } = useLanguage();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -97,25 +101,28 @@ export default function RestaurantDashboardClient({ restaurant }) {
                   className="text-gray-600 hover:text-gray-900"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Menu
+                  {t("backToMenu")}
                 </Button>
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
                   {restaurant.name}
                 </h1>
-                <p className="text-gray-600">Restaurant Management Dashboard</p>
+                <p className="text-gray-600">{t("restaurantManagement")}</p>
               </div>
             </div>
-            <Link href={`/${restaurant.slug}`} target="_blank">
-              <Button
-                variant="outline"
-                className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Live Menu
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <LanguageToggle />
+              <Link href={`/${restaurant.slug}`} target="_blank">
+                <Button
+                  variant="outline"
+                  className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  {t("viewLiveMenu")}
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -123,11 +130,15 @@ export default function RestaurantDashboardClient({ restaurant }) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="categories" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-            <TabsTrigger value="menu-items">Menu Items</TabsTrigger>
-            <TabsTrigger value="about">About Us</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="categories">{t("categories")}</TabsTrigger>
+            <TabsTrigger value="menu-items">{t("menuItems")}</TabsTrigger>
+            <TabsTrigger value="about">{t("about")}</TabsTrigger>
+            <TabsTrigger value="appearance">
+              {t("restaurantAppearance")}
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              {t("restaurantSettings")}
+            </TabsTrigger>
           </TabsList>
 
           {/* Categories Tab */}
@@ -136,10 +147,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle className="text-2xl">Menu Categories</CardTitle>
-                    <CardDescription>
-                      Organize your menu into categories for better navigation
-                    </CardDescription>
+                    <CardTitle className="text-2xl">
+                      {t("menuCategories")}
+                    </CardTitle>
+                    <CardDescription>{t("organizeMenu")}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -148,7 +159,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                 <Card className="border-orange-200 bg-orange-50/50">
                   <CardHeader>
                     <CardTitle className="text-lg text-orange-800">
-                      Add New Category
+                      {t("addNewCategory")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -160,17 +171,17 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="name">Category Name</Label>
+                          <Label htmlFor="name">{t("categoryName")}</Label>
                           <Input
                             id="name"
                             name="name"
-                            placeholder="e.g., Appetizers, Main Courses"
+                            placeholder={t("categoryName")}
                             required
                             className="mt-1"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="sortOrder">Sort Order</Label>
+                          <Label htmlFor="sortOrder">{t("sortOrder")}</Label>
                           <Input
                             id="sortOrder"
                             name="sortOrder"
@@ -182,17 +193,19 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                       <div>
                         <Label htmlFor="description">
-                          Description (Optional)
+                          {t("description")} ({t("optional")})
                         </Label>
                         <Textarea
                           id="description"
                           name="description"
-                          placeholder="Brief description of this category..."
+                          placeholder={t("briefDescription")}
                           className="mt-1"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="categoryImage">Category Image</Label>
+                        <Label htmlFor="categoryImage">
+                          {t("categoryImage")}
+                        </Label>
                         <div className="mt-1 flex items-center space-x-4">
                           <Input
                             id="categoryImage"
@@ -220,7 +233,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         className="bg-orange-600 hover:bg-orange-700"
                       >
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Category
+                        {t("addCategory")}
                       </Button>
                     </form>
                   </CardContent>
@@ -235,21 +248,34 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                              {category.name}
-                            </h3>
-                            {category.description && (
-                              <p className="text-gray-600 mb-3">
-                                {category.description}
-                              </p>
+                          <div className="flex items-center gap-4 flex-1">
+                            {category.image && (
+                              <div className="w-16 h-16 rounded-lg overflow-hidden">
+                                <Image
+                                  src={category.image || "/placeholder.svg"}
+                                  alt={category.name}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
                             )}
-                            <Badge
-                              variant="outline"
-                              className="bg-orange-50 text-orange-700 border-orange-200"
-                            >
-                              {category.menuItems.length} items
-                            </Badge>
+                            <div>
+                              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                {category.name}
+                              </h3>
+                              {category.description && (
+                                <p className="text-gray-600 mb-3">
+                                  {category.description}
+                                </p>
+                              )}
+                              <Badge
+                                variant="outline"
+                                className="bg-orange-50 text-orange-700 border-orange-200"
+                              >
+                                {category.menuItems.length} {t("items")}
+                              </Badge>
+                            </div>
                           </div>
                           <form action={deleteCategory}>
                             <input
@@ -280,10 +306,8 @@ export default function RestaurantDashboardClient({ restaurant }) {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle className="text-2xl">Menu Items</CardTitle>
-                    <CardDescription>
-                      Manage your menu items, pricing, and availability
-                    </CardDescription>
+                    <CardTitle className="text-2xl">{t("menuItems")}</CardTitle>
+                    <CardDescription>{t("manageMenuItems")}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -291,8 +315,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                 {restaurant.categories.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <p className="text-gray-500 text-lg">
-                      Please create at least one category before adding menu
-                      items.
+                      {t("createCategoryFirst")}
                     </p>
                   </div>
                 ) : (
@@ -301,7 +324,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     <Card className="border-orange-200 bg-orange-50/50">
                       <CardHeader>
                         <CardTitle className="text-lg text-orange-800">
-                          Add New Menu Item
+                          {t("addNewMenuItem")}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -314,17 +337,17 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="name">Item Name</Label>
+                              <Label htmlFor="name">{t("itemName")}</Label>
                               <Input
                                 id="name"
                                 name="name"
-                                placeholder="e.g., Grilled Salmon"
+                                placeholder={t("itemName")}
                                 required
                                 className="mt-1"
                               />
                             </div>
                             <div>
-                              <Label htmlFor="price">Price ($)</Label>
+                              <Label htmlFor="price">{t("price")} ($)</Label>
                               <Input
                                 id="price"
                                 name="price"
@@ -337,7 +360,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                             <div>
                               <Label htmlFor="salePrice">
-                                Sale Price ($) - Optional
+                                {t("salePrice")} ($) - {t("optional")}
                               </Label>
                               <Input
                                 id="salePrice"
@@ -348,23 +371,25 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 className="mt-1"
                               />
                               <p className="text-xs text-gray-500 mt-1">
-                                Leave empty if no sale price
+                                {t("leaveEmptyIfNo")}
                               </p>
                             </div>
                           </div>
 
                           <div>
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description">
+                              {t("description")}
+                            </Label>
                             <Textarea
                               id="description"
                               name="description"
-                              placeholder="Describe the dish, ingredients, preparation..."
+                              placeholder={t("description")}
                               className="mt-1"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="image">Item Image</Label>
+                            <Label htmlFor="image">{t("itemImage")}</Label>
                             <div className="mt-1 flex items-center space-x-4">
                               <Input
                                 id="image"
@@ -390,10 +415,12 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
-                              <Label htmlFor="categoryId">Category</Label>
+                              <Label htmlFor="categoryId">
+                                {t("categories")}
+                              </Label>
                               <Select name="categoryId" required>
                                 <SelectTrigger className="mt-1">
-                                  <SelectValue placeholder="Select category" />
+                                  <SelectValue placeholder={t("categories")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {restaurant.categories.map((category) => (
@@ -408,35 +435,43 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               </Select>
                             </div>
                             <div>
-                              <Label htmlFor="isAvailable">Availability</Label>
+                              <Label htmlFor="isAvailable">
+                                {t("availability")}
+                              </Label>
                               <Select name="isAvailable" defaultValue="true">
                                 <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="true">
-                                    Available
+                                    {t("available")}
                                   </SelectItem>
                                   <SelectItem value="false">
-                                    Not Available
+                                    {t("notAvailable")}
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                             <div>
-                              <Label htmlFor="isVegetarian">Vegetarian</Label>
+                              <Label htmlFor="isVegetarian">
+                                {t("vegetarian")}
+                              </Label>
                               <Select name="isVegetarian" defaultValue="false">
                                 <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="true">Yes</SelectItem>
-                                  <SelectItem value="false">No</SelectItem>
+                                  <SelectItem value="true">
+                                    {t("vegetarian")}
+                                  </SelectItem>
+                                  <SelectItem value="false">لا</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                             <div>
-                              <Label htmlFor="sortOrder">Sort Order</Label>
+                              <Label htmlFor="sortOrder">
+                                {t("sortOrder")}
+                              </Label>
                               <Input
                                 id="sortOrder"
                                 name="sortOrder"
@@ -452,7 +487,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             className="bg-orange-600 hover:bg-orange-700"
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add Menu Item
+                            {t("addMenuItem")}
                           </Button>
                         </form>
                       </CardContent>
@@ -465,7 +500,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                             {category.name}
                             <Badge variant="outline" className="ml-2">
-                              {category.menuItems.length} items
+                              {category.menuItems.length} {t("items")}
                             </Badge>
                           </h3>
                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -523,6 +558,17 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                         ? item.price
                                         : item.price.toString()}
                                     </Badge>
+                                    {item.salePrice && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-red-600 border-red-600"
+                                      >
+                                        {t("sale")}: $
+                                        {typeof item.salePrice === "string"
+                                          ? item.salePrice
+                                          : item.salePrice.toString()}
+                                      </Badge>
+                                    )}
                                     <Badge
                                       variant={
                                         item.isAvailable
@@ -534,15 +580,15 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       }
                                     >
                                       {item.isAvailable
-                                        ? "Available"
-                                        : "Not Available"}
+                                        ? t("available")
+                                        : t("notAvailable")}
                                     </Badge>
                                     {item.isVegetarian && (
                                       <Badge
                                         variant="outline"
                                         className="text-green-600 border-green-600"
                                       >
-                                        Vegetarian
+                                        {t("vegetarian")}
                                       </Badge>
                                     )}
                                   </div>
@@ -552,7 +598,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           </div>
                           {category.menuItems.length === 0 && (
                             <p className="text-gray-500 text-center py-8 bg-gray-50 rounded-lg">
-                              No items in this category yet.
+                              لا توجد عناصر في هذه الفئة بعد.
                             </p>
                           )}
                         </div>
@@ -568,11 +614,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
           <TabsContent value="about">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">About Us Information</CardTitle>
-                <CardDescription>
-                  Tell your customers about your restaurant&apos;s story,
-                  mission, and values
-                </CardDescription>
+                <CardTitle className="text-2xl">
+                  {t("aboutUsInformation")}
+                </CardTitle>
+                <CardDescription>{t("tellCustomersAbout")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form action={updateAboutUs} className="space-y-6">
@@ -584,48 +629,48 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
-                      <Label htmlFor="aboutStory">Our Story</Label>
+                      <Label htmlFor="aboutStory">{t("ourStory")}</Label>
                       <Textarea
                         id="aboutStory"
                         name="aboutStory"
                         defaultValue={restaurant.aboutStory || ""}
-                        placeholder="Tell the story of how your restaurant began..."
+                        placeholder={t("tellStoryHow")}
                         rows={4}
                         className="mt-1"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="aboutMission">Our Mission</Label>
+                      <Label htmlFor="aboutMission">{t("ourMission")}</Label>
                       <Textarea
                         id="aboutMission"
                         name="aboutMission"
                         defaultValue={restaurant.aboutMission || ""}
-                        placeholder="What is your restaurant's mission?"
+                        placeholder={t("whatIsRestaurantMission")}
                         rows={4}
                         className="mt-1"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="aboutVision">Our Vision</Label>
+                      <Label htmlFor="aboutVision">{t("ourVision")}</Label>
                       <Textarea
                         id="aboutVision"
                         name="aboutVision"
                         defaultValue={restaurant.aboutVision || ""}
-                        placeholder="What is your vision for the future?"
+                        placeholder={t("whatIsVisionFuture")}
                         rows={4}
                         className="mt-1"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="aboutChef">About Our Chef</Label>
+                      <Label htmlFor="aboutChef">{t("ourChef")}</Label>
                       <Textarea
                         id="aboutChef"
                         name="aboutChef"
                         defaultValue={restaurant.aboutChef || ""}
-                        placeholder="Tell customers about your head chef..."
+                        placeholder={t("tellCustomersAboutChef")}
                         rows={4}
                         className="mt-1"
                       />
@@ -633,29 +678,28 @@ export default function RestaurantDashboardClient({ restaurant }) {
                   </div>
 
                   <div>
-                    <Label htmlFor="aboutHistory">Our History</Label>
+                    <Label htmlFor="aboutHistory">{t("ourHistory")}</Label>
                     <Textarea
                       id="aboutHistory"
                       name="aboutHistory"
                       defaultValue={restaurant.aboutHistory || ""}
-                      placeholder="Share the history and heritage of your restaurant..."
+                      placeholder={t("shareHistoryHeritage")}
                       rows={4}
                       className="mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="googleMapsUrl">Google Maps Embed URL</Label>
+                    <Label htmlFor="googleMapsUrl">{t("googleMapsUrl")}</Label>
                     <Input
                       id="googleMapsUrl"
                       name="googleMapsUrl"
                       defaultValue={restaurant.googleMapsUrl || ""}
-                      placeholder="https://www.google.com/maps/embed?pb=..."
+                      placeholder="https://maps.app.goo.gl/VdQhydFBJi8V7rQy7"
                       className="mt-1"
                     />
                     <p className="text-xs text-gray-600 mt-1">
-                      Get the embed URL from Google Maps by clicking
-                      &quot;Share&quot; → &quot;Embed a map&quot;
+                      يمكنك استخدام رابط مباشر من خرائط جوجل أو رابط التضمين
                     </p>
                   </div>
 
@@ -663,7 +707,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     type="submit"
                     className="bg-orange-600 hover:bg-orange-700"
                   >
-                    Update About Us Information
+                    {t("save")} {t("aboutUsInformation")}
                   </Button>
                 </form>
               </CardContent>
@@ -675,10 +719,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">
-                  Restaurant Appearance
+                  {t("restaurantAppearance")}
                 </CardTitle>
                 <CardDescription>
-                  Customize your restaurant&apos;s visual identity and branding
+                  {t("customizeVisualIdentity")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -691,7 +735,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                   {/* Logo Upload */}
                   <div>
-                    <Label htmlFor="logo">Restaurant Logo</Label>
+                    <Label htmlFor="logo">{t("restaurantLogo")}</Label>
                     <div className="mt-2 flex items-center space-x-4">
                       <Input
                         id="logo"
@@ -718,29 +762,28 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       )}
                     </div>
                     <p className="text-xs text-gray-600 mt-1">
-                      Upload a square logo (recommended: 200x200px)
+                      {t("uploadSquareLogo")}
                     </p>
                   </div>
 
                   {/* Restaurant Name */}
                   <div>
-                    <Label htmlFor="displayName">Display Name</Label>
+                    <Label htmlFor="displayName">{t("displayName")}</Label>
                     <Input
                       id="displayName"
                       name="displayName"
                       defaultValue={restaurant.name}
-                      placeholder="Restaurant display name"
+                      placeholder={t("displayName")}
                       className="mt-1"
                     />
                     <p className="text-xs text-gray-600 mt-1">
-                      This name will appear in the header and throughout your
-                      site
+                      هذا الاسم سيظهر في الرأس وفي جميع أنحاء موقعك
                     </p>
                   </div>
 
                   {/* Banner Color */}
                   <div>
-                    <Label htmlFor="bannerColor">Banner Color</Label>
+                    <Label htmlFor="bannerColor">{t("bannerColor")}</Label>
                     <div className="mt-2 flex items-center space-x-4">
                       <Input
                         id="bannerColor"
@@ -762,15 +805,14 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                     <p className="text-xs text-gray-600 mt-1">
-                      Choose the primary color for your restaurant&apos;s header
-                      and accents
+                      {t("choosePrimaryColor")}
                     </p>
                   </div>
 
                   {/* Banner Background Image */}
                   <div>
                     <Label htmlFor="bannerImage">
-                      Banner Background Image (Optional)
+                      {t("bannerBackgroundImage")} ({t("optional")})
                     </Label>
                     <div className="mt-2 space-y-4">
                       <Input
@@ -803,15 +845,14 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             className="rounded"
                           />
                           <span className="text-sm text-gray-600">
-                            Remove background image
+                            {t("removeBackgroundImage")}
                           </span>
                         </label>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mt-1">
-                      Upload a background image for your header. It will be
-                      displayed with 75% opacity and brightness for better text
-                      readability.
+                      ارفع صورة خلفية لرأس موقعك. ستُعرض بشفافية 75% وسطوع
+                      للحصول على قراءة أفضل للنص.
                     </p>
                   </div>
 
@@ -819,7 +860,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     type="submit"
                     className="bg-orange-600 hover:bg-orange-700"
                   >
-                    Update Appearance
+                    {t("updateAppearance")}
                   </Button>
                 </form>
               </CardContent>
@@ -830,20 +871,19 @@ export default function RestaurantDashboardClient({ restaurant }) {
           <TabsContent value="settings">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Restaurant Settings</CardTitle>
-                <CardDescription>
-                  Manage your restaurant&apos;s basic information and access
-                  details
-                </CardDescription>
+                <CardTitle className="text-2xl">
+                  {t("restaurantSettings")}
+                </CardTitle>
+                <CardDescription>{t("manageBasicInfo")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <Label className="text-sm font-medium">
-                      Restaurant URL
+                      {t("restaurantUrl")}
                     </Label>
                     <p className="text-sm text-gray-600 mt-1">
-                      Your menu is available at:
+                      {t("menuAvailableAt")}
                     </p>
                     <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
                       https://{restaurant.slug}.yourdomain.com
@@ -852,14 +892,16 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                   <div>
                     <Label className="text-sm font-medium">
-                      Dashboard Access
+                      {t("dashboardAccess")}
                     </Label>
-                    <p className="text-sm text-gray-600 mt-1">Dashboard URL:</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {t("dashboardUrl")}
+                    </p>
                     <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
-                      https://{restaurant.slug}.yourdomain.com/dashboard
+                      https://{restaurant.slug}.yourdomain.com/dashboard/manage
                     </code>
                     <p className="text-xs text-gray-500 mt-2">
-                      Password: {restaurant.password}
+                      {t("password")}: {restaurant.password}
                     </p>
                   </div>
                 </div>

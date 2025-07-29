@@ -1,13 +1,24 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Users, Store, ChefHat, Utensils } from "lucide-react";
 import { adminLogin, restaurantLogin } from "./actions";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export default function HomePage() {
+  const { t, isRTL } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-slate-100">
+      {/* Language Toggle - Fixed Position */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageToggle />
+      </div>
+
       {/* Hero Section */}
       <div className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
@@ -25,12 +36,10 @@ export default function HomePage() {
               E-Menu
             </h1>
             <p className="text-xl md:text-2xl mb-8 font-light">
-              Revolutionizing Restaurant Management
+              {t("revolutionizingRestaurant")}
             </p>
             <p className="text-lg opacity-90 max-w-2xl mx-auto leading-relaxed">
-              Streamline your restaurant operations with our comprehensive
-              digital menu system. From elegant menu displays to powerful
-              management tools.
+              {t("streamlineOperations")}
             </p>
           </div>
 
@@ -40,7 +49,7 @@ export default function HomePage() {
               className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg"
             >
               <ChefHat className="w-5 h-5 mr-2" />
-              Get Started
+              {t("getStarted")}
             </Button>
             <Button
               size="lg"
@@ -48,7 +57,7 @@ export default function HomePage() {
               className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg bg-transparent"
             >
               <Utensils className="w-5 h-5 mr-2" />
-              Learn More
+              {t("learnMore")}
             </Button>
           </div>
         </div>
@@ -59,11 +68,10 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Choose Your Access Level
+              {t("chooseAccessLevel")}
             </h2>
             <p className="text-xl text-gray-600">
-              Whether you&apos;re managing multiple restaurants or running your
-              own establishment
+              {t("managingMultipleRestaurants")}
             </p>
           </div>
 
@@ -76,11 +84,10 @@ export default function HomePage() {
                     <Users className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    System Administrator
+                    {t("systemAdministrator")}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Manage multiple restaurants, oversee operations, and control
-                    the entire platform
+                    {t("manageMultipleRestaurants")}
                   </p>
                 </div>
 
@@ -90,13 +97,13 @@ export default function HomePage() {
                       htmlFor="admin-password"
                       className="text-sm font-medium"
                     >
-                      Admin Password
+                      {t("adminPassword")}
                     </Label>
                     <Input
                       id="admin-password"
                       name="password"
                       type="password"
-                      placeholder="Enter admin password"
+                      placeholder={t("enterAdminPassword")}
                       className="h-12"
                       required
                     />
@@ -106,7 +113,7 @@ export default function HomePage() {
                     type="submit"
                     className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-white font-medium"
                   >
-                    Access Admin Dashboard
+                    {t("accessAdminDashboard")}
                   </Button>
                 </form>
               </CardContent>
@@ -120,11 +127,10 @@ export default function HomePage() {
                     <Store className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    Restaurant Owner
+                    {t("restaurantOwner")}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Manage your restaurant menu, update information, and control
-                    your digital presence
+                    {t("manageRestaurantMenu")}
                   </p>
                 </div>
 
@@ -134,12 +140,12 @@ export default function HomePage() {
                       htmlFor="restaurant-name"
                       className="text-sm font-medium"
                     >
-                      Restaurant Name
+                      {t("restaurantName")}
                     </Label>
                     <Input
                       id="restaurant-name"
                       name="name"
-                      placeholder="Enter your restaurant name"
+                      placeholder={t("enterRestaurantName")}
                       className="h-12"
                       required
                     />
@@ -149,13 +155,13 @@ export default function HomePage() {
                       htmlFor="restaurant-password"
                       className="text-sm font-medium"
                     >
-                      Password
+                      {t("password")}
                     </Label>
                     <Input
                       id="restaurant-password"
                       name="password"
                       type="password"
-                      placeholder="Enter password"
+                      placeholder={t("enterPassword")}
                       className="h-12"
                       required
                     />
@@ -167,7 +173,7 @@ export default function HomePage() {
                     type="submit"
                     className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
                   >
-                    Access Restaurant Dashboard
+                    {t("accessRestaurantDashboard")}
                   </Button>
                 </form>
               </CardContent>
@@ -177,16 +183,57 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">E-Menu</h3>
-          <p className="text-gray-400 mb-6">
-            Empowering restaurants with digital innovation
-          </p>
-          <div className="flex justify-center space-x-6">
-            <div className="text-sm text-gray-400">
-              © 2024 E-Menu. All rights reserved.
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="md:col-span-2">
+              <h3 className="text-3xl font-bold mb-4">E-Menu</h3>
+              <p className="text-gray-400 mb-6 text-lg">
+                {t("empoweringRestaurants")}
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                  <ChefHat className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                  <Store className="w-5 h-5" />
+                </div>
+              </div>
             </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">{t("quickLinks")}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    {t("about")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    {t("contact")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    {t("dashboard")}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">{t("followUs")}</h4>
+              <div className="text-gray-400">
+                <p className="mb-2">{t("empoweringRestaurants")}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-400">
+              © 2024 E-Menu. {t("allRightsReserved")}
+            </p>
           </div>
         </div>
       </footer>

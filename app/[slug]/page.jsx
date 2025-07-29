@@ -6,7 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { MapPin, Phone, Mail, Settings, MenuIcon, Search } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Settings,
+  MenuIcon,
+  Search,
+  ChevronDown,
+  ExternalLink,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -18,12 +32,12 @@ import MenuItemModal from "@/components/MenuItemModal";
 
 export default function RestaurantMenu({ params }) {
   const [restaurant, setRestaurant] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const [showItemModal, setShowItemModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [openCategories, setOpenCategories] = useState({});
 
   const { t, isRTL } = useLanguage();
   const { addToCart } = useCart();
@@ -47,6 +61,11 @@ export default function RestaurantMenu({ params }) {
         }
         const data = await response.json();
         setRestaurant(data);
+
+        // Open first category by default
+        if (data.categories.length > 0) {
+          setOpenCategories({ [data.categories[0].id]: true });
+        }
       } catch (error) {
         console.error("Error fetching restaurant:", error);
         notFound();
@@ -57,12 +76,19 @@ export default function RestaurantMenu({ params }) {
     fetchRestaurant();
   }, [params]);
 
+  const toggleCategory = (categoryId) => {
+    setOpenCategories((prev) => ({
+      ...prev,
+      [categoryId]: !prev[categoryId],
+    }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading menu...</p>
+          <p className="mt-4 text-gray-600">{t("loadingMenu")}</p>
         </div>
       </div>
     );
@@ -88,15 +114,13 @@ export default function RestaurantMenu({ params }) {
       }
     : {};
 
-  const filteredCategories = restaurant.categories.filter((category) =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredMenuItems = selectedCategory
-    ? selectedCategory.menuItems.filter((item) =>
+  const filteredCategories = restaurant.categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      category.menuItems.some((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : [];
+  );
 
   const handleItemClick = (item) => {
     setSelectedMenuItem(item);
@@ -154,7 +178,7 @@ export default function RestaurantMenu({ params }) {
               </nav>
               <div className="flex items-center gap-2">
                 <LanguageToggle />
-                <Link href={`/${restaurant.slug}/dashboard`}>
+                <Link href={`/${restaurant.slug}/dashboard/manage`}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -187,7 +211,7 @@ export default function RestaurantMenu({ params }) {
       </div>
 
       {/* Restaurant Info */}
-      <div className="bg-white border-b">
+      <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-wrap gap-6 text-sm text-gray-600">
             {restaurant.address && (
@@ -213,27 +237,16 @@ export default function RestaurantMenu({ params }) {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filter */}
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder={t("searchMenu")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            {selectedCategory && (
-              <Button
-                variant="outline"
-                onClick={() => setSelectedCategory(null)}
-                className="whitespace-nowrap"
-              >
-                {t("showAllCategories")}
-              </Button>
-            )}
+        {/* Search */}
+        <div className="mb-8">
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder={t("searchMenu")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-12 text-lg"
+            />
           </div>
         </div>
 
@@ -253,216 +266,335 @@ export default function RestaurantMenu({ params }) {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-12">
-              {!selectedCategory ? (
-                // Show Categories
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredCategories.map((category) => (
-                    <Card
-                      key={category.id}
-                      className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      <div className="aspect-video bg-gray-200 relative">
-                        {category.image ? (
-                          <Image
-                            src={category.image || "/placeholder.svg"}
-                            alt={category.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
-                            <div className="text-gray-400 text-center">
-                              <MenuIcon className="w-12 h-12 mx-auto mb-2" />
-                              <p className="text-sm">{t("noImage")}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          {category.name}
-                        </h3>
-                        {category.description && (
-                          <p className="text-gray-600 mb-4 line-clamp-2">
-                            {category.description}
-                          </p>
-                        )}
-                        <Badge
-                          variant="outline"
-                          className="text-orange-600 border-orange-600"
-                        >
-                          {category.menuItems.length} {t("items")}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                // Show Menu Items for Selected Category
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-3xl font-bold text-gray-900">
-                      {selectedCategory.name}
-                    </h3>
-                    <Badge variant="outline" className="text-lg px-3 py-1">
-                      {filteredMenuItems.length} {t("items")}
-                    </Badge>
-                  </div>
+            <div className="space-y-4">
+              {filteredCategories.map((category) => {
+                const filteredItems = category.menuItems.filter((item) =>
+                  item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
 
-                  <div
-                    className={`grid gap-6 ${
-                      isMobile ? "grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3"
-                    }`}
+                if (searchTerm && filteredItems.length === 0) return null;
+
+                return (
+                  <Collapsible
+                    key={category.id}
+                    open={openCategories[category.id]}
+                    onOpenChange={() => toggleCategory(category.id)}
                   >
-                    {filteredMenuItems.map((item) => {
-                      const currentPrice = item.salePrice || item.price;
-                      const hasDiscount =
-                        item.salePrice &&
-                        Number.parseFloat(item.salePrice) <
-                          Number.parseFloat(item.price);
-
-                      return (
-                        <Card
-                          key={item.id}
-                          className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                        >
-                          <div className="aspect-video bg-gray-200 relative">
-                            {item.image ? (
-                              <Image
-                                src={item.image || "/placeholder.svg"}
-                                alt={item.imageAlt || item.name}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
-                                <div className="text-gray-400 text-center">
-                                  <MenuIcon className="w-8 h-8 mx-auto mb-1" />
-                                  <p className="text-xs">{t("noImage")}</p>
-                                </div>
-                              </div>
-                            )}
-                            {hasDiscount && (
-                              <Badge className="absolute top-2 right-2 bg-red-500 text-white">
-                                {t("sale")}
-                              </Badge>
-                            )}
-                          </div>
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start mb-2">
-                              <h4 className="text-lg font-semibold text-gray-900 line-clamp-1">
-                                {item.name}
-                              </h4>
-                              <div className="text-right">
-                                <span className="text-xl font-bold text-orange-600">
-                                  ${Number.parseFloat(currentPrice).toFixed(2)}
-                                </span>
-                                {hasDiscount && (
-                                  <div className="text-sm text-gray-500 line-through">
-                                    ${Number.parseFloat(item.price).toFixed(2)}
+                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <CollapsibleTrigger asChild>
+                        <div className="cursor-pointer">
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                {category.image && (
+                                  <div className="w-16 h-16 rounded-lg overflow-hidden">
+                                    <Image
+                                      src={category.image || "/placeholder.svg"}
+                                      alt={category.name}
+                                      width={64}
+                                      height={64}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                 )}
+                                <div>
+                                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                    {category.name}
+                                  </h3>
+                                  {category.description && (
+                                    <p className="text-gray-600 mb-2">
+                                      {category.description}
+                                    </p>
+                                  )}
+                                  <Badge
+                                    variant="outline"
+                                    className="text-orange-600 border-orange-600"
+                                  >
+                                    {filteredItems.length} {t("items")}
+                                  </Badge>
+                                </div>
                               </div>
-                            </div>
-
-                            {item.description && (
-                              <p className="text-gray-600 mb-3 line-clamp-2 text-sm">
-                                {item.description}
-                              </p>
-                            )}
-
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {item.isVegetarian && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-green-600 border-green-600 text-xs"
-                                >
-                                  {t("isVegetarian")}
-                                </Badge>
-                              )}
-                              {item.isVegan && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-green-700 border-green-700 text-xs"
-                                >
-                                  {t("isVegan")}
-                                </Badge>
-                              )}
-                              {item.isGlutenFree && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-blue-600 border-blue-600 text-xs"
-                                >
-                                  {t("isGlutenFree")}
-                                </Badge>
-                              )}
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleItemClick(item)}
-                                className="flex-1 text-xs"
-                              >
-                                {t("viewDetails")}
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => handleAddToCart(item)}
-                                className="flex-1 bg-orange-600 hover:bg-orange-700 text-xs"
-                                disabled={!item.isAvailable}
-                              >
-                                {t("addToCart")}
-                              </Button>
+                              <ChevronDown
+                                className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${
+                                  openCategories[category.id]
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
                             </div>
                           </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                        </div>
+                      </CollapsibleTrigger>
+
+                      <CollapsibleContent>
+                        <div className="border-t bg-gray-50/50">
+                          <div className="p-6">
+                            <div
+                              className={`grid gap-6 ${
+                                isMobile
+                                  ? "grid-cols-1"
+                                  : "md:grid-cols-2 lg:grid-cols-3"
+                              }`}
+                            >
+                              {filteredItems.map((item) => {
+                                const currentPrice =
+                                  item.salePrice || item.price;
+                                const hasDiscount =
+                                  item.salePrice &&
+                                  Number.parseFloat(item.salePrice) <
+                                    Number.parseFloat(item.price);
+
+                                return (
+                                  <Card
+                                    key={item.id}
+                                    className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white"
+                                  >
+                                    <div className="aspect-video bg-gray-200 relative">
+                                      {item.image ? (
+                                        <Image
+                                          src={item.image || "/placeholder.svg"}
+                                          alt={item.imageAlt || item.name}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      ) : (
+                                        <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
+                                          <div className="text-gray-400 text-center">
+                                            <MenuIcon className="w-8 h-8 mx-auto mb-1" />
+                                            <p className="text-xs">
+                                              {t("noImage")}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {hasDiscount && (
+                                        <Badge className="absolute top-2 right-2 bg-red-500 text-white">
+                                          {t("sale")}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <CardContent className="p-4">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h4 className="text-lg font-semibold text-gray-900 line-clamp-1">
+                                          {item.name}
+                                        </h4>
+                                        <div className="text-right">
+                                          <span className="text-xl font-bold text-orange-600">
+                                            $
+                                            {Number.parseFloat(
+                                              currentPrice
+                                            ).toFixed(2)}
+                                          </span>
+                                          {hasDiscount && (
+                                            <div className="text-sm text-gray-500 line-through">
+                                              $
+                                              {Number.parseFloat(
+                                                item.price
+                                              ).toFixed(2)}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {item.description && (
+                                        <p className="text-gray-600 mb-3 line-clamp-2 text-sm">
+                                          {item.description}
+                                        </p>
+                                      )}
+
+                                      <div className="flex flex-wrap gap-1 mb-3">
+                                        {item.isVegetarian && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-green-600 border-green-600 text-xs"
+                                          >
+                                            {t("vegetarian")}
+                                          </Badge>
+                                        )}
+                                        {item.isVegan && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-green-700 border-green-700 text-xs"
+                                          >
+                                            {t("vegan")}
+                                          </Badge>
+                                        )}
+                                        {item.isGlutenFree && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-blue-600 border-blue-600 text-xs"
+                                          >
+                                            {t("glutenFree")}
+                                          </Badge>
+                                        )}
+                                      </div>
+
+                                      <div className="flex gap-2">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleItemClick(item)}
+                                          className="flex-1 text-xs"
+                                        >
+                                          {t("viewDetails")}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleAddToCart(item)}
+                                          className="flex-1 bg-orange-600 hover:bg-orange-700 text-xs"
+                                          disabled={!item.isAvailable}
+                                        >
+                                          {t("addToCart")}
+                                        </Button>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Card>
+                  </Collapsible>
+                );
+              })}
             </div>
           )}
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer id="contact" className="bg-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl font-bold mb-4">{restaurant.name}</h3>
-              {restaurant.address && (
-                <p className="text-gray-400 mb-2">{restaurant.address}</p>
+          <div className="grid md:grid-cols-3 gap-12">
+            {/* Restaurant Info */}
+            <div>
+              <div className="flex items-center mb-6">
+                {restaurant.logo && (
+                  <Image
+                    src={restaurant.logo || "/placeholder.svg"}
+                    alt={`${restaurant.name} logo`}
+                    width={48}
+                    height={48}
+                    className="mr-3 rounded-lg"
+                  />
+                )}
+                <h3 className="text-2xl font-bold">{restaurant.name}</h3>
+              </div>
+              {restaurant.description && (
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  {restaurant.description}
+                </p>
               )}
-              <div className="flex justify-center md:justify-start space-x-6 mt-6">
-                <div className="text-sm text-gray-400">
-                  © 2024 {restaurant.name}. {t("allRightsReserved")}
-                </div>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 className="text-lg font-semibold mb-6">{t("contactInfo")}</h4>
+              <div className="space-y-4">
+                {restaurant.address && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
+                    <p className="text-gray-400">{restaurant.address}</p>
+                  </div>
+                )}
+                {restaurant.phone && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                    <p className="text-gray-400">{restaurant.phone}</p>
+                  </div>
+                )}
+                {restaurant.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                    <p className="text-gray-400">{restaurant.email}</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Google Maps */}
-            {restaurant.googleMapsUrl && (
-              <div>
-                <h4 className="text-lg font-semibold mb-4">{t("location")}</h4>
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <iframe
-                    src={restaurant.googleMapsUrl}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  ></iframe>
+            {/* Google Maps or Quick Links */}
+            <div>
+              {restaurant.googleMapsUrl ? (
+                <div>
+                  <h4 className="text-lg font-semibold mb-6">
+                    {t("location")}
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-800">
+                      <iframe
+                        src={
+                          restaurant.googleMapsUrl.includes("embed")
+                            ? restaurant.googleMapsUrl
+                            : `https://maps.google.com/maps?q=${encodeURIComponent(
+                                restaurant.address || restaurant.name
+                              )}&output=embed`
+                        }
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      ></iframe>
+                    </div>
+                    {restaurant.googleMapsUrl.includes("goo.gl") && (
+                      <a
+                        href={restaurant.googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-500 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        {t("viewOnGoogleMaps")}
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div>
+                  <h4 className="text-lg font-semibold mb-6">
+                    {t("quickLinks")}
+                  </h4>
+                  <ul className="space-y-3">
+                    <li>
+                      <a
+                        href="#menu"
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        {t("menu")}
+                      </a>
+                    </li>
+                    <li>
+                      <Link
+                        href={`/${restaurant.slug}/about`}
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        {t("about")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href={`/${restaurant.slug}/dashboard/manage`}
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        {t("dashboard")}
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 mb-4 md:mb-0">
+              © 2024 {restaurant.name}. {t("allRightsReserved")}
+            </p>
+            <div className="flex items-center gap-4">
+              <LanguageToggle />
+            </div>
           </div>
         </div>
       </footer>
