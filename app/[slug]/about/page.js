@@ -1,20 +1,50 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Phone, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 
-async function getRestaurant(slug) {
-  return await prisma.restaurant.findUnique({
-    where: { slug, isActive: true },
-  });
-}
+export default function AboutPage({ params }) {
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { t, isRTL } = useLanguage();
 
-export default async function AboutPage({ params }) {
-  const { slug } = await params;
-  const restaurant = await getRestaurant(slug);
+  useEffect(() => {
+    const fetchRestaurant = async () => {
+      try {
+        const { slug } = await params;
+        const response = await fetch(`/api/restaurant/${slug}`);
+        if (!response.ok) {
+          notFound();
+        }
+        const data = await response.json();
+        setRestaurant(data);
+      } catch (error) {
+        console.error("Error fetching restaurant:", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRestaurant();
+  }, [params]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!restaurant) {
     notFound();
@@ -62,15 +92,19 @@ export default async function AboutPage({ params }) {
               </div>
               <nav className="hidden md:flex space-x-8">
                 <Link
-                  href={`/${slug}`}
+                  href={`/${restaurant.slug}`}
                   className="hover:text-orange-200 transition-colors"
                 >
                   Menu
                 </Link>
-                <Link href={`/${slug}/about`} className="text-orange-200">
+                <Link
+                  href={`/${restaurant.slug}/about`}
+                  className="text-orange-200"
+                >
                   About
                 </Link>
               </nav>
+              <LanguageToggle />
             </div>
           </div>
         </div>
@@ -80,7 +114,7 @@ export default async function AboutPage({ params }) {
       <div className="relative py-20" style={bannerStyle}>
         <div style={overlayStyle} className="absolute inset-0"></div>
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <Link href={`/${slug}`}>
+          <Link href={`/${restaurant.slug}`}>
             <Button
               variant="ghost"
               className="mb-6 text-white hover:bg-white/20"

@@ -45,6 +45,9 @@ model Restaurant {
   aboutChef    String? @map("about_chef")
   aboutHistory String? @map("about_history")
 
+  // Google Maps URL
+  googleMapsUrl String? @map("google_maps_url")
+
   // Business hours
   hoursMonday    String? @map("hours_monday")
   hoursTuesday   String? @map("hours_tuesday")
@@ -85,15 +88,16 @@ model Category {
 }
 
 model MenuItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  price       Decimal @db.Decimal(10, 2)
+  price       Decimal  @db.Decimal(10, 2)
+  salePrice   Decimal? @map("sale_price") @db.Decimal(10, 2) // Optional sale price
   image       String? // Base64 encoded image
-  imageAlt    String? @map("image_alt")
-  isAvailable Boolean @default(true) @map("is_available")
-  isActive    Boolean @default(true) @map("is_active")
-  sortOrder   Int     @default(0) @map("sort_order")
+  imageAlt    String?  @map("image_alt")
+  isAvailable Boolean  @default(true) @map("is_available")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
 
   // Additional fields for better menu control
   ingredients  String?

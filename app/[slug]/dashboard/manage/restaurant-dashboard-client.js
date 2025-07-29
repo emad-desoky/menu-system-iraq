@@ -37,6 +37,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
+  const [categoryImagePreview, setCategoryImagePreview] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -66,6 +67,17 @@ export default function RestaurantDashboardClient({ restaurant }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCategoryImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCategoryImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -178,6 +190,30 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           placeholder="Brief description of this category..."
                           className="mt-1"
                         />
+                      </div>
+                      <div>
+                        <Label htmlFor="categoryImage">Category Image</Label>
+                        <div className="mt-1 flex items-center space-x-4">
+                          <Input
+                            id="categoryImage"
+                            name="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleCategoryImageChange}
+                            className="flex-1"
+                          />
+                          {categoryImagePreview && (
+                            <div className="w-16 h-16 rounded-lg overflow-hidden border">
+                              <Image
+                                src={categoryImagePreview || "/placeholder.svg"}
+                                alt="Category preview"
+                                width={64}
+                                height={64}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <Button
                         type="submit"
@@ -298,6 +334,22 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 required
                                 className="mt-1"
                               />
+                            </div>
+                            <div>
+                              <Label htmlFor="salePrice">
+                                Sale Price ($) - Optional
+                              </Label>
+                              <Input
+                                id="salePrice"
+                                name="salePrice"
+                                type="number"
+                                step="0.01"
+                                placeholder="15.99"
+                                className="mt-1"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">
+                                Leave empty if no sale price
+                              </p>
                             </div>
                           </div>
 
@@ -590,6 +642,21 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       rows={4}
                       className="mt-1"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="googleMapsUrl">Google Maps Embed URL</Label>
+                    <Input
+                      id="googleMapsUrl"
+                      name="googleMapsUrl"
+                      defaultValue={restaurant.googleMapsUrl || ""}
+                      placeholder="https://www.google.com/maps/embed?pb=..."
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">
+                      Get the embed URL from Google Maps by clicking
+                      &quot;Share&quot; → &quot;Embed a map&quot;
+                    </p>
                   </div>
 
                   <Button

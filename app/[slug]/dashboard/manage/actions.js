@@ -4,9 +4,22 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 
 export async function createCategory(formData) {
+  // Handle category image upload
+  const imageFile = formData.get("image");
+  let imageData = null;
+
+  if (imageFile && imageFile.size > 0) {
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString("base64");
+    const mimeType = imageFile.type;
+    imageData = `data:${mimeType};base64,${base64}`;
+  }
+
   const data = {
     name: formData.get("name"),
     description: formData.get("description") || null,
+    image: imageData,
     sortOrder: Number.parseInt(formData.get("sortOrder")) || 0,
     restaurantId: formData.get("restaurantId"),
   };
@@ -34,10 +47,15 @@ export async function createMenuItem(formData) {
     imageData = `data:${mimeType};base64,${base64}`;
   }
 
+  const salePrice = formData.get("salePrice");
+  const salePriceValue =
+    salePrice && salePrice !== "" ? Number.parseFloat(salePrice) : null;
+
   const data = {
     name: formData.get("name"),
     description: formData.get("description") || null,
     price: Number.parseFloat(formData.get("price")),
+    salePrice: salePriceValue,
     isAvailable: formData.get("isAvailable") === "true",
     isVegetarian: formData.get("isVegetarian") === "true",
     isVegan: formData.get("isVegan") === "true",
@@ -46,7 +64,7 @@ export async function createMenuItem(formData) {
     restaurantId: formData.get("restaurantId"),
     categoryId: formData.get("categoryId"),
     image: imageData,
-    imageAlt: formData.get("name"), // Use item name as alt text
+    imageAlt: formData.get("name"),
   };
 
   try {
@@ -96,6 +114,7 @@ export async function updateAboutUs(formData) {
     aboutVision: formData.get("aboutVision") || null,
     aboutChef: formData.get("aboutChef") || null,
     aboutHistory: formData.get("aboutHistory") || null,
+    googleMapsUrl: formData.get("googleMapsUrl") || null,
   };
 
   try {
