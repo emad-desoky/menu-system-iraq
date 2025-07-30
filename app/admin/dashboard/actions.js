@@ -1,18 +1,37 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 
 export async function createRestaurant(formData) {
+  // Handle category image upload
+  const imageFile = formData.get("image");
+  let imageData = null;
+  if (imageFile && imageFile.size > 0) {
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString("base64");
+    const mimeType = imageFile.type;
+    imageData = `data:${mimeType};base64,${base64}`;
+  }
+
   const data = {
-    name: formData.get("name"),
+    name:
+      formData.get("nameAr") || formData.get("nameEn") || "Unnamed Restaurant",
+    nameAr: formData.get("nameAr"),
+    nameEn: formData.get("nameEn"),
     slug: formData.get("slug"),
-    description: formData.get("description") || null,
+    description:
+      formData.get("descriptionAr") || formData.get("descriptionEn") || null,
+    descriptionAr: formData.get("descriptionAr") || null,
+    descriptionEn: formData.get("descriptionEn") || null,
     email: formData.get("email") || null,
     phone: formData.get("phone") || null,
     address: formData.get("address") || null,
-    password: formData.get("password"),
+    password: formData.get("password") || "123",
+    googleMapsUrl: formData.get("googleMapsUrl") || null,
+    facebookUrl: formData.get("facebookUrl") || null,
+    instagramUrl: formData.get("instagramUrl") || null,
   };
 
   try {
@@ -25,14 +44,12 @@ export async function createRestaurant(formData) {
       // Generate a unique slug by appending a number
       let counter = 1;
       let uniqueSlug = `${data.slug}-${counter}`;
-
       while (
         await prisma.restaurant.findUnique({ where: { slug: uniqueSlug } })
       ) {
         counter++;
         uniqueSlug = `${data.slug}-${counter}`;
       }
-
       data.slug = uniqueSlug;
     }
 
@@ -66,6 +83,7 @@ export async function deleteRestaurant(formData) {
     await prisma.restaurant.delete({
       where: { id: restaurantId },
     });
+
     revalidatePath("/admin/dashboard");
   } catch (error) {
     console.error("Error deleting restaurant:", error);

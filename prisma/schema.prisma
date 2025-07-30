@@ -56,8 +56,10 @@ model Restaurant {
   aboutHistoryAr String? @map("about_history_ar")
   aboutHistoryEn String? @map("about_history_en")
 
-  // Google Maps URL
+  // Google Maps URL and Social Media Links
   googleMapsUrl String? @map("google_maps_url")
+  facebookUrl   String? @map("facebook_url")
+  instagramUrl  String? @map("instagram_url")
 
   // Business hours
   hoursMonday    String? @map("hours_monday")

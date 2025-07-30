@@ -1,5 +1,4 @@
 "use client";
-
 import { createContext, useContext, useState, useEffect } from "react";
 
 const translations = {
@@ -58,6 +57,14 @@ const translations = {
       "يرجى إنشاء فئة واحدة على الأقل قبل إضافة عناصر القائمة.",
     noItemsInCategory: "لا توجد عناصر في هذه الفئة بعد.",
     noItemsFound: "لم يتم العثور على عناصر.",
+
+    // Rating
+    rateRestaurant: "قيم المطعم",
+    thankYouForRating: "شكراً لتقييمك",
+    howWasExperience: "كيف كانت تجربتك في",
+    clickStarsToRate: "انقر على النجوم للتقييم",
+    ratingSubmitted: "تم إرسال التقييم",
+    changeRating: "تغيير التقييم",
 
     // Common
     name: "الاسم",
@@ -250,6 +257,14 @@ const translations = {
       "Please create at least one category before adding menu items.",
     noItemsInCategory: "No items in this category yet.",
     noItemsFound: "No items found.",
+
+    // Rating
+    rateRestaurant: "Rate Restaurant",
+    thankYouForRating: "Thank You for Rating",
+    howWasExperience: "How was your experience at",
+    clickStarsToRate: "Click stars to rate",
+    ratingSubmitted: "Rating submitted",
+    changeRating: "Change rating",
 
     // Common
     name: "Name",

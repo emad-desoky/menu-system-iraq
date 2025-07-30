@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Card,
   CardContent,
@@ -11,7 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Store, Eye, LogOut, Trash2, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus,
+  Store,
+  Eye,
+  LogOut,
+  Trash2,
+  Users,
+  Languages,
+} from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import { logout, createRestaurant, deleteRestaurant } from "./actions";
@@ -67,28 +75,50 @@ export default function AdminDashboardClient({ restaurants }) {
           </CardHeader>
           <CardContent>
             <form action={createRestaurant} className="space-y-6">
+              {/* Bilingual Restaurant Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">{t("restaurantName")}</Label>
+                  <Label htmlFor="nameAr" className="flex items-center gap-2">
+                    {t("restaurantName")} (العربية)
+                    <Badge variant="outline" className="text-xs">
+                      AR
+                    </Badge>
+                  </Label>
                   <Input
-                    id="name"
-                    name="name"
-                    placeholder="مطعم رائع"
+                    id="nameAr"
+                    name="nameAr"
+                    placeholder="اسم المطعم"
                     required
                     className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="password">{t("restaurantPassword")}</Label>
+                  <Label htmlFor="nameEn" className="flex items-center gap-2">
+                    {t("restaurantName")} (English)
+                    <Badge variant="outline" className="text-xs">
+                      EN
+                    </Badge>
+                  </Label>
                   <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder={t("enterPassword")}
+                    id="nameEn"
+                    name="nameEn"
+                    placeholder="Restaurant Name"
                     required
                     className="mt-1"
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="password">{t("restaurantPassword")}</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder={t("enterPassword")}
+                  required
+                  className="mt-1"
+                />
               </div>
 
               <div>
@@ -107,14 +137,42 @@ export default function AdminDashboardClient({ restaurants }) {
                 </p>
               </div>
 
-              <div>
-                <Label htmlFor="description">{t("description")}</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="وصف مختصر للمطعم..."
-                  className="mt-1"
-                />
+              {/* Bilingual Description */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label
+                    htmlFor="descriptionAr"
+                    className="flex items-center gap-2"
+                  >
+                    {t("description")} (العربية)
+                    <Badge variant="outline" className="text-xs">
+                      AR
+                    </Badge>
+                  </Label>
+                  <Textarea
+                    id="descriptionAr"
+                    name="descriptionAr"
+                    placeholder="وصف مختصر للمطعم..."
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="descriptionEn"
+                    className="flex items-center gap-2"
+                  >
+                    {t("description")} (English)
+                    <Badge variant="outline" className="text-xs">
+                      EN
+                    </Badge>
+                  </Label>
+                  <Textarea
+                    id="descriptionEn"
+                    name="descriptionEn"
+                    placeholder="Brief description of the restaurant..."
+                    className="mt-1"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -148,6 +206,37 @@ export default function AdminDashboardClient({ restaurants }) {
                   rows={2}
                   className="mt-1"
                 />
+              </div>
+
+              {/* Google Maps and Social Media Links */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="googleMapsUrl">Google Maps URL</Label>
+                  <Input
+                    id="googleMapsUrl"
+                    name="googleMapsUrl"
+                    placeholder="https://maps.app.goo.gl/..."
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="facebookUrl">Facebook Page URL</Label>
+                  <Input
+                    id="facebookUrl"
+                    name="facebookUrl"
+                    placeholder="https://facebook.com/yourrestaurant"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="instagramUrl">Instagram Page URL</Label>
+                  <Input
+                    id="instagramUrl"
+                    name="instagramUrl"
+                    placeholder="https://instagram.com/yourrestaurant"
+                    className="mt-1"
+                  />
+                </div>
               </div>
 
               <Button
@@ -191,7 +280,9 @@ export default function AdminDashboardClient({ restaurants }) {
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-xl text-gray-900">
-                        {restaurant.name}
+                        {restaurant.nameAr ||
+                          restaurant.nameEn ||
+                          restaurant.name}
                       </CardTitle>
                       <div
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -203,9 +294,13 @@ export default function AdminDashboardClient({ restaurants }) {
                         {restaurant.isActive ? t("active") : t("inactive")}
                       </div>
                     </div>
-                    {restaurant.description && (
+                    {(restaurant.descriptionAr ||
+                      restaurant.descriptionEn ||
+                      restaurant.description) && (
                       <CardDescription className="line-clamp-2">
-                        {restaurant.description}
+                        {restaurant.descriptionAr ||
+                          restaurant.descriptionEn ||
+                          restaurant.description}
                       </CardDescription>
                     )}
                   </CardHeader>
@@ -224,7 +319,6 @@ export default function AdminDashboardClient({ restaurants }) {
                         </span>
                       </div>
                     </div>
-
                     <div className="space-y-2">
                       <div className="text-sm">
                         <span className="text-gray-600">{t("password")}:</span>
@@ -239,7 +333,6 @@ export default function AdminDashboardClient({ restaurants }) {
                         </code>
                       </div>
                     </div>
-
                     <div className="flex gap-2 pt-2">
                       <Button
                         size="sm"

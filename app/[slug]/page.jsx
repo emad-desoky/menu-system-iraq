@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +13,10 @@ import {
   Settings,
   Search,
   ShoppingCart,
+  Facebook,
+  Instagram,
+  ExternalLink,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,6 +26,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import Cart from "@/components/Cart";
 import CartSidebar from "@/components/CartSidebar";
 import MenuItemModal from "@/components/MenuItemModal";
+import RestaurantRating from "@/components/RestaurantRating";
 
 export default function RestaurantMenu({ params }) {
   const [restaurant, setRestaurant] = useState(null);
@@ -31,7 +35,6 @@ export default function RestaurantMenu({ params }) {
   const [showItemModal, setShowItemModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-
   const { t, isRTL, language } = useLanguage();
   const { addToCart, getTotalItems } = useCart();
 
@@ -52,6 +55,7 @@ export default function RestaurantMenu({ params }) {
         setLoading(false);
       }
     };
+
     fetchRestaurant();
   }, [params]);
 
@@ -111,7 +115,6 @@ export default function RestaurantMenu({ params }) {
 
   const getFilteredItems = () => {
     let items = [];
-
     if (activeTab === "all") {
       items = getAllMenuItems();
     } else {
@@ -153,24 +156,24 @@ export default function RestaurantMenu({ params }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
+      {/* Mobile Header - Made Responsive */}
       <header className="md:hidden bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center">
+          <div className="flex items-center min-w-0 flex-1">
             {restaurant.logo && (
               <Image
                 src={restaurant.logo || "/placeholder.svg"}
                 alt={`${getLocalizedText(restaurant, "name")} logo`}
                 width={32}
                 height={32}
-                className="mr-2 rounded"
+                className="mr-2 rounded flex-shrink-0"
               />
             )}
-            <h1 className="text-lg font-bold text-gray-900">
+            <h1 className="text-lg font-bold text-gray-900 truncate">
               {getLocalizedText(restaurant, "name")}
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <LanguageToggle />
             {totalCartItems > 0 && (
               <Button
@@ -254,18 +257,18 @@ export default function RestaurantMenu({ params }) {
         </div>
       </header>
 
-      {/* Hero Section - Desktop Only */}
+      {/* Hero Section - Desktop Only - Made Responsive */}
       <div
-        className="hidden md:block relative h-80 flex items-center justify-center"
+        className="hidden md:block relative min-h-[20rem] lg:h-80 flex items-center justify-center"
         style={bannerStyle}
       >
         <div style={overlayStyle} className="absolute inset-0"></div>
-        <div className="text-center text-white z-10">
-          <h1 className="text-5xl font-bold mb-4">
+        <div className="text-center text-white z-10 px-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             {getLocalizedText(restaurant, "name")}
           </h1>
           {getLocalizedText(restaurant, "description") && (
-            <p className="text-xl opacity-90 max-w-2xl mx-auto px-4">
+            <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto px-4">
               {getLocalizedText(restaurant, "description")}
             </p>
           )}
@@ -278,7 +281,7 @@ export default function RestaurantMenu({ params }) {
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
             {getLocalizedText(restaurant, "address") && (
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-orange-600" />
+                <MapPin className="w-4 h-4 text-orange-600 flex-shrink-0" />
                 <span className="truncate">
                   {getLocalizedText(restaurant, "address")}
                 </span>
@@ -286,14 +289,14 @@ export default function RestaurantMenu({ params }) {
             )}
             {restaurant.phone && (
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-orange-600" />
-                {restaurant.phone}
+                <Phone className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                <span>{restaurant.phone}</span>
               </div>
             )}
             {restaurant.email && (
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-orange-600" />
-                {restaurant.email}
+                <Mail className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                <span className="truncate">{restaurant.email}</span>
               </div>
             )}
           </div>
@@ -314,12 +317,16 @@ export default function RestaurantMenu({ params }) {
           </div>
         </div>
 
+        {/* Restaurant Rating Component */}
+        <RestaurantRating
+          restaurantName={getLocalizedText(restaurant, "name")}
+        />
+
         {/* Menu Section */}
         <section id="menu" className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
             {t("ourMenu")}
           </h2>
-
           {restaurant.categories.length === 0 ? (
             <Card className="text-center py-16">
               <CardContent>
@@ -335,23 +342,28 @@ export default function RestaurantMenu({ params }) {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-5 mb-8 h-auto p-1 bg-gray-100">
-                <TabsTrigger
-                  value="all"
-                  className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white"
-                >
-                  {t("all")}
-                </TabsTrigger>
-                {restaurant.categories.slice(0, 4).map((category) => (
-                  <TabsTrigger
-                    key={category.id}
-                    value={category.id}
-                    className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white truncate"
-                  >
-                    {getLocalizedText(category, "name")}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+              {/* Horizontal Scrolling Tabs */}
+              <div className="relative mb-8">
+                <div className="overflow-x-auto scrollbar-hide">
+                  <TabsList className="inline-flex h-auto p-1 bg-gray-100 rounded-lg min-w-full w-max">
+                    <TabsTrigger
+                      value="all"
+                      className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white whitespace-nowrap"
+                    >
+                      {t("all")}
+                    </TabsTrigger>
+                    {restaurant.categories.map((category) => (
+                      <TabsTrigger
+                        key={category.id}
+                        value={category.id}
+                        className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white whitespace-nowrap"
+                      >
+                        {getLocalizedText(category, "name")}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+              </div>
 
               <TabsContent value={activeTab} className="mt-0">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -359,8 +371,7 @@ export default function RestaurantMenu({ params }) {
                     const currentPrice = item.salePrice || item.price;
                     const hasDiscount =
                       item.salePrice &&
-                      Number.parseFloat(item.salePrice) <
-                        Number.parseFloat(item.price);
+                      parseFloat(item.salePrice) < parseFloat(item.price);
 
                     return (
                       <Card
@@ -406,21 +417,19 @@ export default function RestaurantMenu({ params }) {
                           <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm md:text-base mb-1">
                             {getLocalizedText(item, "name")}
                           </h4>
-
                           {getLocalizedText(item, "description") && (
                             <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-2">
                               {getLocalizedText(item, "description")}
                             </p>
                           )}
-
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-lg font-bold text-orange-600">
-                                ${Number.parseFloat(currentPrice).toFixed(2)}
+                                ${parseFloat(currentPrice).toFixed(2)}
                               </span>
                               {hasDiscount && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  ${Number.parseFloat(item.price).toFixed(2)}
+                                  ${parseFloat(item.price).toFixed(2)}
                                 </span>
                               )}
                             </div>
@@ -436,7 +445,6 @@ export default function RestaurantMenu({ params }) {
                               {t("addToCart")}
                             </Button>
                           </div>
-
                           <div className="flex flex-wrap gap-1 mt-2">
                             {item.isVegetarian && (
                               <Badge
@@ -468,7 +476,6 @@ export default function RestaurantMenu({ params }) {
                     );
                   })}
                 </div>
-
                 {getFilteredItems().length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">{t("noItemsFound")}</p>
@@ -505,6 +512,29 @@ export default function RestaurantMenu({ params }) {
                   {getLocalizedText(restaurant, "description")}
                 </p>
               )}
+              {/* Social Media Links */}
+              <div className="flex gap-4">
+                {restaurant.facebookUrl && (
+                  <a
+                    href={restaurant.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-500 transition-colors"
+                  >
+                    <Facebook className="w-6 h-6" />
+                  </a>
+                )}
+                {restaurant.instagramUrl && (
+                  <a
+                    href={restaurant.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-pink-500 transition-colors"
+                  >
+                    <Instagram className="w-6 h-6" />
+                  </a>
+                )}
+              </div>
             </div>
 
             {/* Contact Info */}
@@ -565,7 +595,6 @@ export default function RestaurantMenu({ params }) {
               </ul>
             </div>
           </div>
-
           <div className="border-t border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 mb-4 md:mb-0">
               © 2024 {getLocalizedText(restaurant, "name")}.{" "}
