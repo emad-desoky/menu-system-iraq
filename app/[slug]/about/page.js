@@ -86,6 +86,7 @@ export default function AboutPage({ params }) {
               <div className="flex items-center">
                 {restaurant.logo && (
                   <Image
+                    unoptimized
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={40}

@@ -54,6 +54,7 @@ export default function MenuItemModal({ item, isOpen, onClose }) {
                 src={item.image || "/placeholder.svg"}
                 alt={item.imageAlt || item.name}
                 fill
+                unoptimized
                 className="object-cover"
               />
             </div>

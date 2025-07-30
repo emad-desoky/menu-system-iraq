@@ -202,6 +202,7 @@ export default function RestaurantMenu({ params }) {
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={32}
+                    unoptimized
                     height={32}
                     className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 mr-1 sm:mr-2 lg:mr-3 rounded-lg flex-shrink-0"
                   />
@@ -391,6 +392,7 @@ export default function RestaurantMenu({ params }) {
                               alt={
                                 item.imageAlt || getLocalizedText(item, "name")
                               }
+                              unoptimized
                               fill
                               className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
@@ -505,6 +507,7 @@ export default function RestaurantMenu({ params }) {
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={40}
                     height={40}
+                    unoptimized
                     className="mr-3 rounded-lg"
                   />
                 )}
