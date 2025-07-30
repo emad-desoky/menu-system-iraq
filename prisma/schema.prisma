@@ -44,17 +44,22 @@ model Restaurant {
   bannerColor String? @default("#ea580c") @map("banner_color")
   bannerImage String? @map("banner_image") // Base64 encoded banner image
 
-  // About Us sections - Bilingual
-  aboutStoryAr   String? @map("about_story_ar")
-  aboutStoryEn   String? @map("about_story_en")
-  aboutMissionAr String? @map("about_mission_ar")
-  aboutMissionEn String? @map("about_mission_en")
-  aboutVisionAr  String? @map("about_vision_ar")
-  aboutVisionEn  String? @map("about_vision_en")
-  aboutChefAr    String? @map("about_chef_ar")
-  aboutChefEn    String? @map("about_chef_en")
-  aboutHistoryAr String? @map("about_history_ar")
-  aboutHistoryEn String? @map("about_history_en")
+  // About Us sections - Bilingual with Images
+  aboutStoryAr      String? @map("about_story_ar")
+  aboutStoryEn      String? @map("about_story_en")
+  aboutStoryImage   String? @map("about_story_image")
+  aboutMissionAr    String? @map("about_mission_ar")
+  aboutMissionEn    String? @map("about_mission_en")
+  aboutMissionImage String? @map("about_mission_image")
+  aboutVisionAr     String? @map("about_vision_ar")
+  aboutVisionEn     String? @map("about_vision_en")
+  aboutVisionImage  String? @map("about_vision_image")
+  aboutChefAr       String? @map("about_chef_ar")
+  aboutChefEn       String? @map("about_chef_en")
+  aboutChefImage    String? @map("about_chef_image")
+  aboutHistoryAr    String? @map("about_history_ar")
+  aboutHistoryEn    String? @map("about_history_en")
+  aboutHistoryImage String? @map("about_history_image")
 
   // Google Maps URL and Social Media Links
   googleMapsUrl String? @map("google_maps_url")

@@ -126,7 +126,6 @@ export async function updateAboutUs(formData) {
 
   // Handle different Google Maps URL formats
   if (googleMapsUrl) {
-    // If it's a goo.gl link, keep it as is for direct linking
     if (
       googleMapsUrl.includes("goo.gl") ||
       googleMapsUrl.includes("maps.app.goo.gl")
@@ -136,7 +135,6 @@ export async function updateAboutUs(formData) {
       googleMapsUrl.includes("google.com/maps") &&
       !googleMapsUrl.includes("embed")
     ) {
-      // Convert regular Google Maps URL to embed URL
       const urlParams = new URLSearchParams(googleMapsUrl.split("?")[1]);
       const query = urlParams.get("q") || urlParams.get("query");
       if (query) {
@@ -146,6 +144,25 @@ export async function updateAboutUs(formData) {
       }
     }
   }
+
+  // Handle image uploads for each about section
+  const handleImageUpload = async (fileField) => {
+    const imageFile = formData.get(fileField);
+    if (imageFile && imageFile.size > 0) {
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = buffer.toString("base64");
+      const mimeType = imageFile.type;
+      return `data:${mimeType};base64,${base64}`;
+    }
+    return null;
+  };
+
+  const aboutStoryImage = await handleImageUpload("aboutStoryImage");
+  const aboutMissionImage = await handleImageUpload("aboutMissionImage");
+  const aboutVisionImage = await handleImageUpload("aboutVisionImage");
+  const aboutChefImage = await handleImageUpload("aboutChefImage");
+  const aboutHistoryImage = await handleImageUpload("aboutHistoryImage");
 
   const data = {
     aboutStoryAr: formData.get("aboutStoryAr") || null,
@@ -162,6 +179,13 @@ export async function updateAboutUs(formData) {
     facebookUrl: formData.get("facebookUrl") || null,
     instagramUrl: formData.get("instagramUrl") || null,
   };
+
+  // Only update images if new ones were uploaded
+  if (aboutStoryImage) data.aboutStoryImage = aboutStoryImage;
+  if (aboutMissionImage) data.aboutMissionImage = aboutMissionImage;
+  if (aboutVisionImage) data.aboutVisionImage = aboutVisionImage;
+  if (aboutChefImage) data.aboutChefImage = aboutChefImage;
+  if (aboutHistoryImage) data.aboutHistoryImage = aboutHistoryImage;
 
   try {
     await prisma.restaurant.update({

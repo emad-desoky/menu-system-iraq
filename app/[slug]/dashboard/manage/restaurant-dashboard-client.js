@@ -864,209 +864,313 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     name="restaurantId"
                     value={restaurant.id}
                   />
-                  {/* Our Story - Bilingual */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <Label
-                        htmlFor="aboutStoryAr"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourStory")} (العربية)
-                        <Badge variant="outline" className="text-xs">
-                          AR
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutStoryAr"
-                        name="aboutStoryAr"
-                        defaultValue={restaurant.aboutStoryAr || ""}
-                        placeholder="احك قصة كيف بدأ مطعمك..."
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="aboutStoryEn"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourStory")} (English)
-                        <Badge variant="outline" className="text-xs">
-                          EN
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutStoryEn"
-                        name="aboutStoryEn"
-                        defaultValue={restaurant.aboutStoryEn || ""}
-                        placeholder="Tell the story of how your restaurant began..."
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  {/* Mission & Vision - Bilingual */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <Label
-                        htmlFor="aboutMissionAr"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourMission")} (العربية)
-                        <Badge variant="outline" className="text-xs">
-                          AR
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutMissionAr"
-                        name="aboutMissionAr"
-                        defaultValue={restaurant.aboutMissionAr || ""}
-                        placeholder="ما هي مهمة مطعمك؟"
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="aboutMissionEn"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourMission")} (English)
-                        <Badge variant="outline" className="text-xs">
-                          EN
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutMissionEn"
-                        name="aboutMissionEn"
-                        defaultValue={restaurant.aboutMissionEn || ""}
-                        placeholder="What is your restaurant's mission?"
-                        rows={4}
-                        className="mt-1"
-                      />
+
+                  {/* Our Story - Bilingual with Image */}
+                  <div className="border rounded-lg p-6 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      {t("ourStory")}
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="aboutStoryImage">
+                          {t("image")} - {t("optional")}
+                        </Label>
+                        <Input
+                          id="aboutStoryImage"
+                          name="aboutStoryImage"
+                          type="file"
+                          accept="image/*"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="aboutStoryAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourStory")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutStoryAr"
+                            name="aboutStoryAr"
+                            defaultValue={restaurant.aboutStoryAr || ""}
+                            placeholder="احك قصة كيف بدأ مطعمك..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="aboutStoryEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourStory")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutStoryEn"
+                            name="aboutStoryEn"
+                            defaultValue={restaurant.aboutStoryEn || ""}
+                            placeholder="Tell the story of how your restaurant began..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <Label
-                        htmlFor="aboutVisionAr"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourVision")} (العربية)
-                        <Badge variant="outline" className="text-xs">
-                          AR
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutVisionAr"
-                        name="aboutVisionAr"
-                        defaultValue={restaurant.aboutVisionAr || ""}
-                        placeholder="ما هي رؤيتك للمستقبل؟"
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="aboutVisionEn"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourVision")} (English)
-                        <Badge variant="outline" className="text-xs">
-                          EN
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutVisionEn"
-                        name="aboutVisionEn"
-                        defaultValue={restaurant.aboutVisionEn || ""}
-                        placeholder="What is your vision for the future?"
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  {/* Chef & History - Bilingual */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <Label
-                        htmlFor="aboutChefAr"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourChef")} (العربية)
-                        <Badge variant="outline" className="text-xs">
-                          AR
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutChefAr"
-                        name="aboutChefAr"
-                        defaultValue={restaurant.aboutChefAr || ""}
-                        placeholder="أخبر العملاء عن الشيف الرئيسي..."
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="aboutChefEn"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourChef")} (English)
-                        <Badge variant="outline" className="text-xs">
-                          EN
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutChefEn"
-                        name="aboutChefEn"
-                        defaultValue={restaurant.aboutChefEn || ""}
-                        placeholder="Tell customers about your head chef..."
-                        rows={4}
-                        className="mt-1"
-                      />
+
+                  {/* Mission - Bilingual with Image */}
+                  <div className="border rounded-lg p-6 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      {t("ourMission")}
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="aboutMissionImage">
+                          {t("image")} - {t("optional")}
+                        </Label>
+                        <Input
+                          id="aboutMissionImage"
+                          name="aboutMissionImage"
+                          type="file"
+                          accept="image/*"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="aboutMissionAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourMission")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutMissionAr"
+                            name="aboutMissionAr"
+                            defaultValue={restaurant.aboutMissionAr || ""}
+                            placeholder="ما هي مهمة مطعمك؟"
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="aboutMissionEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourMission")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutMissionEn"
+                            name="aboutMissionEn"
+                            defaultValue={restaurant.aboutMissionEn || ""}
+                            placeholder="What is your restaurant's mission?"
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <Label
-                        htmlFor="aboutHistoryAr"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourHistory")} (العربية)
-                        <Badge variant="outline" className="text-xs">
-                          AR
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutHistoryAr"
-                        name="aboutHistoryAr"
-                        defaultValue={restaurant.aboutHistoryAr || ""}
-                        placeholder="شارك تاريخ وتراث مطعمك..."
-                        rows={4}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="aboutHistoryEn"
-                        className="flex items-center gap-2"
-                      >
-                        {t("ourHistory")} (English)
-                        <Badge variant="outline" className="text-xs">
-                          EN
-                        </Badge>
-                      </Label>
-                      <Textarea
-                        id="aboutHistoryEn"
-                        name="aboutHistoryEn"
-                        defaultValue={restaurant.aboutHistoryEn || ""}
-                        placeholder="Share the history and heritage of your restaurant..."
-                        rows={4}
-                        className="mt-1"
-                      />
+
+                  {/* Vision - Bilingual with Image */}
+                  <div className="border rounded-lg p-6 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      {t("ourVision")}
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="aboutVisionImage">
+                          {t("image")} - {t("optional")}
+                        </Label>
+                        <Input
+                          id="aboutVisionImage"
+                          name="aboutVisionImage"
+                          type="file"
+                          accept="image/*"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="aboutVisionAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourVision")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutVisionAr"
+                            name="aboutVisionAr"
+                            defaultValue={restaurant.aboutVisionAr || ""}
+                            placeholder="ما هي رؤيتك للمستقبل؟"
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="aboutVisionEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourVision")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutVisionEn"
+                            name="aboutVisionEn"
+                            defaultValue={restaurant.aboutVisionEn || ""}
+                            placeholder="What is your vision for the future?"
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Chef - Bilingual with Image */}
+                  <div className="border rounded-lg p-6 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      {t("ourChef")}
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="aboutChefImage">
+                          {t("image")} - {t("optional")}
+                        </Label>
+                        <Input
+                          id="aboutChefImage"
+                          name="aboutChefImage"
+                          type="file"
+                          accept="image/*"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="aboutChefAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourChef")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutChefAr"
+                            name="aboutChefAr"
+                            defaultValue={restaurant.aboutChefAr || ""}
+                            placeholder="أخبر العملاء عن الشيف الرئيسي..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="aboutChefEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourChef")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutChefEn"
+                            name="aboutChefEn"
+                            defaultValue={restaurant.aboutChefEn || ""}
+                            placeholder="Tell customers about your head chef..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* History - Bilingual with Image */}
+                  <div className="border rounded-lg p-6 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      {t("ourHistory")}
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="aboutHistoryImage">
+                          {t("image")} - {t("optional")}
+                        </Label>
+                        <Input
+                          id="aboutHistoryImage"
+                          name="aboutHistoryImage"
+                          type="file"
+                          accept="image/*"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="aboutHistoryAr"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourHistory")} (العربية)
+                            <Badge variant="outline" className="text-xs">
+                              AR
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutHistoryAr"
+                            name="aboutHistoryAr"
+                            defaultValue={restaurant.aboutHistoryAr || ""}
+                            placeholder="شارك تاريخ وتراث مطعمك..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="aboutHistoryEn"
+                            className="flex items-center gap-2"
+                          >
+                            {t("ourHistory")} (English)
+                            <Badge variant="outline" className="text-xs">
+                              EN
+                            </Badge>
+                          </Label>
+                          <Textarea
+                            id="aboutHistoryEn"
+                            name="aboutHistoryEn"
+                            defaultValue={restaurant.aboutHistoryEn || ""}
+                            placeholder="Share the history and heritage of your restaurant..."
+                            rows={4}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Google Maps and Social Media - Keep as before */}
                   <div>
                     <Label htmlFor="googleMapsUrl">{t("googleMapsUrl")}</Label>
                     <Input
@@ -1081,7 +1185,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </p>
                   </div>
 
-                  {/* Social Media Links */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label

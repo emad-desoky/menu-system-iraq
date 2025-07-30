@@ -189,11 +189,12 @@ export default function RestaurantMenu({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Unified Header - Same design for all screen sizes */}
+      {/* Updated Header - Clean background without image */}
       <header
-        className="text-white sticky top-0 z-50 shadow-lg"
-        style={bannerStyle}
+        className="bg-white text-gray-900 sticky top-0 z-50 shadow-lg border-b"
+        style={{ backgroundColor: restaurant.bannerColor || "#ea580c" }}
       >
-        <div style={overlayStyle} className="w-full h-full">
+        <div className="w-full h-full">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-12 sm:h-16">
               <div className="flex items-center min-w-0 flex-shrink-0">
@@ -202,12 +203,11 @@ export default function RestaurantMenu({ params }) {
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={32}
-                    unoptimized
                     height={32}
                     className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 mr-1 sm:mr-2 lg:mr-3 rounded-lg flex-shrink-0"
                   />
                 )}
-                <h1 className="text-xs sm:text-sm lg:text-2xl font-bold truncate">
+                <h1 className="text-xs sm:text-sm lg:text-2xl font-bold truncate text-white">
                   {getLocalizedText(restaurant, "name")}
                 </h1>
               </div>
@@ -215,13 +215,13 @@ export default function RestaurantMenu({ params }) {
               <nav className="flex space-x-2 sm:space-x-4 lg:space-x-8 mx-2 sm:mx-4">
                 <a
                   href="#menu"
-                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base"
+                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base text-white"
                 >
                   {t("menu")}
                 </a>
                 <Link
                   href={`/${restaurant.slug}/about`}
-                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base"
+                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base text-white"
                 >
                   {t("about")}
                 </Link>
@@ -264,6 +264,7 @@ export default function RestaurantMenu({ params }) {
       </header>
 
       {/* Hero Section - Responsive */}
+      {/* Hero Section - Keep the background image here */}
       <div
         className="relative h-32 sm:h-48 lg:h-80 flex items-center justify-center"
         style={bannerStyle}
@@ -392,7 +393,6 @@ export default function RestaurantMenu({ params }) {
                               alt={
                                 item.imageAlt || getLocalizedText(item, "name")
                               }
-                              unoptimized
                               fill
                               className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
@@ -507,7 +507,6 @@ export default function RestaurantMenu({ params }) {
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={40}
                     height={40}
-                    unoptimized
                     className="mr-3 rounded-lg"
                   />
                 )}

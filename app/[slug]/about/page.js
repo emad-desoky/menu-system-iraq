@@ -1,10 +1,17 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, Phone, Mail, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Instagram,
+  ExternalLink,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,14 +20,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 export default function AboutPage({ params }) {
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { t, isRTL, language } = useLanguage();
-
-  const getLocalizedText = (item, field) => {
-    if (language === "ar") {
-      return item[`${field}Ar`] || item[field] || "";
-    }
-    return item[`${field}En`] || item[field] || "";
-  };
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -39,8 +39,16 @@ export default function AboutPage({ params }) {
         setLoading(false);
       }
     };
+
     fetchRestaurant();
   }, [params]);
+
+  const getLocalizedText = (item, field) => {
+    if (language === "ar") {
+      return item[`${field}Ar`] || item[field] || "";
+    }
+    return item[`${field}En`] || item[field] || "";
+  };
 
   if (loading) {
     return (
@@ -73,357 +81,198 @@ export default function AboutPage({ params }) {
       }
     : {};
 
+  const AboutSection = ({ title, content, image }) => {
+    if (!content) return null;
+
+    return (
+      <Card className="mb-8">
+        <CardContent className="p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
+          {image && (
+            <div className="mb-6">
+              <Image
+                src={image || "/placeholder.svg"}
+                alt={title}
+                width={800}
+                height={400}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            </div>
+          )}
+          <p className="text-gray-700 leading-relaxed text-lg">{content}</p>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header
-        className="text-white sticky top-0 z-50 shadow-lg"
-        style={bannerStyle}
+        className="bg-white text-gray-900 sticky top-0 z-50 shadow-lg border-b"
+        style={{ backgroundColor: restaurant.bannerColor || "#ea580c" }}
       >
-        <div style={overlayStyle} className="w-full h-full">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
+        <div className="w-full h-full">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="flex items-center justify-between h-12 sm:h-16">
+              <div className="flex items-center min-w-0 flex-shrink-0">
                 {restaurant.logo && (
                   <Image
-                    unoptimized
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
-                    width={40}
-                    height={40}
-                    className="mr-3 rounded-lg"
+                    width={32}
+                    height={32}
+                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 mr-1 sm:mr-2 lg:mr-3 rounded-lg flex-shrink-0"
                   />
                 )}
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-xs sm:text-sm lg:text-2xl font-bold truncate text-white">
                   {getLocalizedText(restaurant, "name")}
                 </h1>
               </div>
-              <nav className="hidden md:flex space-x-8">
+
+              <nav className="flex space-x-2 sm:space-x-4 lg:space-x-8 mx-2 sm:mx-4">
                 <Link
                   href={`/${restaurant.slug}`}
-                  className="hover:text-orange-200 transition-colors"
+                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base text-white"
                 >
                   {t("menu")}
                 </Link>
-                <Link
-                  href={`/${restaurant.slug}/about`}
-                  className="text-orange-200"
-                >
+                <span className="text-orange-200 font-medium text-xs sm:text-sm lg:text-base">
                   {t("about")}
-                </Link>
+                </span>
               </nav>
-              <LanguageToggle />
+
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <LanguageToggle />
+                <Link href={`/${restaurant.slug}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent text-xs sm:text-sm px-1 sm:px-2 lg:px-3"
+                  >
+                    <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 lg:mr-2" />
+                    <span className="hidden sm:inline">{t("backToMenu")}</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="relative py-20" style={bannerStyle}>
+      <div
+        className="relative h-32 sm:h-48 lg:h-80 flex items-center justify-center"
+        style={bannerStyle}
+      >
         <div style={overlayStyle} className="absolute inset-0"></div>
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <Link href={`/${restaurant.slug}`}>
-            <Button
-              variant="ghost"
-              className="mb-6 text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t("backToMenu")}
-            </Button>
-          </Link>
-          <h1 className="text-5xl font-bold mb-6">
+        <div className="text-center text-white z-10 px-4">
+          <h1 className="text-xl sm:text-2xl lg:text-5xl font-bold mb-2 lg:mb-4">
             {t("about")} {getLocalizedText(restaurant, "name")}
           </h1>
-          {getLocalizedText(restaurant, "description") && (
-            <p className="text-xl opacity-90 leading-relaxed">
-              {getLocalizedText(restaurant, "description")}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* About Content */}
-      <main className="py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* About Sections Grid */}
-          <div className="grid gap-8 md:gap-12">
-            {getLocalizedText(restaurant, "aboutStory") && (
-              <section className="max-w-4xl mx-auto">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 md:p-12">
-                    <div className="text-center mb-8">
-                      <h2
-                        className="text-3xl font-bold text-gray-900 mb-4"
-                        style={{ color: restaurant.bannerColor || "#ea580c" }}
-                      >
-                        {t("ourStory")}
-                      </h2>
-                      <div
-                        className="w-24 h-1 mx-auto rounded-full"
-                        style={{
-                          backgroundColor: restaurant.bannerColor || "#ea580c",
-                        }}
-                      ></div>
-                    </div>
-                    <div className="text-gray-700 leading-relaxed text-center">
-                      <p className="text-lg break-words whitespace-pre-wrap overflow-wrap-anywhere max-w-none">
-                        {getLocalizedText(restaurant, "aboutStory")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </section>
-            )}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* About Sections */}
+        <AboutSection
+          title={t("ourStory")}
+          content={getLocalizedText(restaurant, "aboutStory")}
+          image={restaurant.aboutStoryImage}
+        />
 
-            {/* Mission & Vision Row */}
-            {(getLocalizedText(restaurant, "aboutMission") ||
-              getLocalizedText(restaurant, "aboutVision")) && (
-              <section className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                {getLocalizedText(restaurant, "aboutMission") && (
-                  <Card className="border-0 shadow-lg">
-                    <CardContent className="p-8">
-                      <div className="text-center mb-6">
-                        <h3
-                          className="text-2xl font-bold text-gray-900 mb-3"
-                          style={{ color: restaurant.bannerColor || "#ea580c" }}
-                        >
-                          {t("ourMission")}
-                        </h3>
-                        <div
-                          className="w-16 h-1 mx-auto rounded-full"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
-                        {getLocalizedText(restaurant, "aboutMission")}
-                      </p>
-                    </CardContent>
-                  </Card>
+        <AboutSection
+          title={t("ourMission")}
+          content={getLocalizedText(restaurant, "aboutMission")}
+          image={restaurant.aboutMissionImage}
+        />
+
+        <AboutSection
+          title={t("ourVision")}
+          content={getLocalizedText(restaurant, "aboutVision")}
+          image={restaurant.aboutVisionImage}
+        />
+
+        <AboutSection
+          title={t("ourChef")}
+          content={getLocalizedText(restaurant, "aboutChef")}
+          image={restaurant.aboutChefImage}
+        />
+
+        <AboutSection
+          title={t("ourHistory")}
+          content={getLocalizedText(restaurant, "aboutHistory")}
+          image={restaurant.aboutHistoryImage}
+        />
+
+        {/* Contact Information */}
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {t("visitUs")}
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                {getLocalizedText(restaurant, "address") && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
+                    <p className="text-gray-700">
+                      {getLocalizedText(restaurant, "address")}
+                    </p>
+                  </div>
                 )}
-
-                {getLocalizedText(restaurant, "aboutVision") && (
-                  <Card className="border-0 shadow-lg">
-                    <CardContent className="p-8">
-                      <div className="text-center mb-6">
-                        <h3
-                          className="text-2xl font-bold text-gray-900 mb-3"
-                          style={{ color: restaurant.bannerColor || "#ea580c" }}
-                        >
-                          {t("ourVision")}
-                        </h3>
-                        <div
-                          className="w-16 h-1 mx-auto rounded-full"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
-                        {getLocalizedText(restaurant, "aboutVision")}
-                      </p>
-                    </CardContent>
-                  </Card>
+                {restaurant.phone && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                    <p className="text-gray-700">{restaurant.phone}</p>
+                  </div>
                 )}
-              </section>
-            )}
-
-            {/* Chef & History Row */}
-            {(getLocalizedText(restaurant, "aboutChef") ||
-              getLocalizedText(restaurant, "aboutHistory")) && (
-              <section className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                {getLocalizedText(restaurant, "aboutChef") && (
-                  <Card className="border-0 shadow-lg">
-                    <CardContent className="p-8">
-                      <div className="text-center mb-6">
-                        <h3
-                          className="text-2xl font-bold text-gray-900 mb-3"
-                          style={{ color: restaurant.bannerColor || "#ea580c" }}
-                        >
-                          {t("ourChef")}
-                        </h3>
-                        <div
-                          className="w-16 h-1 mx-auto rounded-full"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
-                        {getLocalizedText(restaurant, "aboutChef")}
-                      </p>
-                    </CardContent>
-                  </Card>
+                {restaurant.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                    <p className="text-gray-700">{restaurant.email}</p>
+                  </div>
                 )}
-
-                {getLocalizedText(restaurant, "aboutHistory") && (
-                  <Card className="border-0 shadow-lg">
-                    <CardContent className="p-8">
-                      <div className="text-center mb-6">
-                        <h3
-                          className="text-2xl font-bold text-gray-900 mb-3"
-                          style={{ color: restaurant.bannerColor || "#ea580c" }}
-                        >
-                          {t("ourHistory")}
-                        </h3>
-                        <div
-                          className="w-16 h-1 mx-auto rounded-full"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed text-center break-words whitespace-pre-wrap overflow-wrap-anywhere">
-                        {getLocalizedText(restaurant, "aboutHistory")}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </section>
-            )}
-
-            {/* Contact Information */}
-            <section className="max-w-4xl mx-auto">
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-8 md:p-12">
-                  <div className="text-center mb-8">
-                    <h2
-                      className="text-3xl font-bold text-gray-900 mb-4"
-                      style={{ color: restaurant.bannerColor || "#ea580c" }}
+                <div className="flex gap-4 pt-2">
+                  {restaurant.facebookUrl && (
+                    <a
+                      href={restaurant.facebookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 transition-colors"
                     >
-                      {t("visitUs")}
-                    </h2>
-                    <div
-                      className="w-24 h-1 mx-auto rounded-full"
-                      style={{
-                        backgroundColor: restaurant.bannerColor || "#ea580c",
-                      }}
-                    ></div>
-                  </div>
-                  <div className="grid md:grid-cols-3 gap-8 text-center">
-                    {getLocalizedText(restaurant, "address") && (
-                      <div className="flex flex-col items-center">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        >
-                          <MapPin className="w-6 h-6 text-white" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {t("address")}
-                        </h4>
-                        <p className="text-gray-600">
-                          {getLocalizedText(restaurant, "address")}
-                        </p>
-                      </div>
-                    )}
-                    {restaurant.phone && (
-                      <div className="flex flex-col items-center">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        >
-                          <Phone className="w-6 h-6 text-white" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {t("phone")}
-                        </h4>
-                        <p className="text-gray-600">{restaurant.phone}</p>
-                      </div>
-                    )}
-                    {restaurant.email && (
-                      <div className="flex flex-col items-center">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-                          style={{
-                            backgroundColor:
-                              restaurant.bannerColor || "#ea580c",
-                          }}
-                        >
-                          <Mail className="w-6 h-6 text-white" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {t("email")}
-                        </h4>
-                        <p className="text-gray-600">{restaurant.email}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Google Maps */}
-                  {restaurant.googleMapsUrl && (
-                    <div className="mt-12">
-                      <h3
-                        className="text-2xl font-bold text-center mb-6"
-                        style={{ color: restaurant.bannerColor || "#ea580c" }}
-                      >
-                        {t("location")}
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                          <iframe
-                            src={
-                              restaurant.googleMapsUrl.includes("embed")
-                                ? restaurant.googleMapsUrl
-                                : `https://maps.google.com/maps?q=${encodeURIComponent(
-                                    getLocalizedText(restaurant, "address") ||
-                                      getLocalizedText(restaurant, "name")
-                                  )}&output=embed`
-                            }
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                          ></iframe>
-                        </div>
-                        {restaurant.googleMapsUrl.includes("goo.gl") && (
-                          <div className="text-center">
-                            <a
-                              href={restaurant.googleMapsUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-500 transition-colors font-medium"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              {t("viewOnGoogleMaps")}
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      <Facebook className="w-6 h-6" />
+                    </a>
                   )}
-                </CardContent>
-              </Card>
-            </section>
-          </div>
-        </div>
+                  {restaurant.instagramUrl && (
+                    <a
+                      href={restaurant.instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-pink-600 hover:text-pink-700 transition-colors"
+                    >
+                      <Instagram className="w-6 h-6" />
+                    </a>
+                  )}
+                </div>
+              </div>
+              {restaurant.googleMapsUrl && (
+                <div>
+                  <a
+                    href={restaurant.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    {t("viewOnGoogleMaps")}
+                  </a>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-2xl font-bold mb-4">
-            {getLocalizedText(restaurant, "name")}
-          </h3>
-          <p className="text-gray-400">
-            © 2024 {getLocalizedText(restaurant, "name")}.{" "}
-            {t("allRightsReserved")}
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
