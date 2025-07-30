@@ -1,5 +1,4 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 
@@ -7,7 +6,6 @@ export async function createCategory(formData) {
   // Handle category image upload
   const imageFile = formData.get("image");
   let imageData = null;
-
   if (imageFile && imageFile.size > 0) {
     const bytes = await imageFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -44,7 +42,6 @@ export async function createMenuItem(formData) {
   // Handle base64 image storage
   const imageFile = formData.get("image");
   let imageData = null;
-
   if (imageFile && imageFile.size > 0) {
     const bytes = await imageFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -99,7 +96,6 @@ export async function createMenuItem(formData) {
 
 export async function deleteCategory(formData) {
   const categoryId = formData.get("categoryId");
-
   try {
     await prisma.category.delete({
       where: { id: categoryId },
@@ -113,7 +109,6 @@ export async function deleteCategory(formData) {
 
 export async function deleteMenuItem(formData) {
   const menuItemId = formData.get("menuItemId");
-
   try {
     await prisma.menuItem.delete({
       where: { id: menuItemId },
@@ -164,6 +159,8 @@ export async function updateAboutUs(formData) {
     aboutHistoryAr: formData.get("aboutHistoryAr") || null,
     aboutHistoryEn: formData.get("aboutHistoryEn") || null,
     googleMapsUrl: googleMapsUrl,
+    facebookUrl: formData.get("facebookUrl") || null,
+    instagramUrl: formData.get("instagramUrl") || null,
   };
 
   try {
@@ -185,7 +182,6 @@ export async function updateAppearance(formData) {
   // Handle logo upload
   const logoFile = formData.get("logo");
   let logoData = null;
-
   if (logoFile && logoFile.size > 0) {
     const bytes = await logoFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -197,7 +193,6 @@ export async function updateAppearance(formData) {
   // Handle banner image upload
   const bannerImageFile = formData.get("bannerImage");
   let bannerImageData = null;
-
   if (bannerImageFile && bannerImageFile.size > 0) {
     const bytes = await bannerImageFile.arrayBuffer();
     const buffer = Buffer.from(bytes);

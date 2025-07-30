@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,8 @@ import {
   ShoppingCart,
   Facebook,
   Instagram,
-  ExternalLink,
-  Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,6 +35,9 @@ export default function RestaurantMenu({ params }) {
   const [showItemModal, setShowItemModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const tabsRef = useRef(null);
   const { t, isRTL, language } = useLanguage();
   const { addToCart, getTotalItems } = useCart();
 
@@ -58,6 +61,42 @@ export default function RestaurantMenu({ params }) {
 
     fetchRestaurant();
   }, [params]);
+
+  useEffect(() => {
+    const checkScrollButtons = () => {
+      if (tabsRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = tabsRef.current;
+        setCanScrollLeft(scrollLeft > 0);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+      }
+    };
+
+    if (tabsRef.current) {
+      checkScrollButtons();
+      tabsRef.current.addEventListener("scroll", checkScrollButtons);
+      window.addEventListener("resize", checkScrollButtons);
+    }
+
+    return () => {
+      if (tabsRef.current) {
+        tabsRef.current.removeEventListener("scroll", checkScrollButtons);
+      }
+      window.removeEventListener("resize", checkScrollButtons);
+    };
+  }, [restaurant]);
+
+  const scrollTabs = (direction) => {
+    if (tabsRef.current) {
+      const scrollAmount = 200;
+      const newScrollLeft =
+        tabsRef.current.scrollLeft +
+        (direction === "left" ? -scrollAmount : scrollAmount);
+      tabsRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const getLocalizedText = (item, field) => {
     if (language === "ar") {
@@ -154,32 +193,38 @@ export default function RestaurantMenu({ params }) {
 
   const totalCartItems = getTotalItems();
 
+  // Show only first 4 categories in tabs, rest need scrolling
+  const visibleCategories = restaurant.categories.slice(0, 4);
+  const hasMoreCategories = restaurant.categories.length > 4;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header - Made Responsive */}
+      {/* Mobile Header - Improved Responsiveness */}
       <header className="md:hidden bg-white border-b shadow-sm sticky top-0 z-40">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center min-w-0 flex-1">
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center min-w-0 flex-1 mr-2">
             {restaurant.logo && (
-              <Image
-                src={restaurant.logo || "/placeholder.svg"}
-                alt={`${getLocalizedText(restaurant, "name")} logo`}
-                width={32}
-                height={32}
-                className="mr-2 rounded flex-shrink-0"
-              />
+              <div className="w-8 h-8 mr-2 flex-shrink-0">
+                <Image
+                  src={restaurant.logo || "/placeholder.svg"}
+                  alt={`${getLocalizedText(restaurant, "name")} logo`}
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-contain rounded"
+                />
+              </div>
             )}
-            <h1 className="text-lg font-bold text-gray-900 truncate">
+            <h1 className="text-base font-bold text-gray-900 truncate">
               {getLocalizedText(restaurant, "name")}
             </h1>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <LanguageToggle />
             {totalCartItems > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative"
+                className="relative p-2"
                 onClick={() => {
                   const cartContext = document.querySelector(
                     "[data-cart-trigger]"
@@ -187,8 +232,8 @@ export default function RestaurantMenu({ params }) {
                   if (cartContext) cartContext.click();
                 }}
               >
-                <ShoppingCart className="w-5 h-5" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-orange-600">
+                <ShoppingCart className="w-4 h-4" />
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-orange-600">
                   {totalCartItems}
                 </Badge>
               </Button>
@@ -232,12 +277,6 @@ export default function RestaurantMenu({ params }) {
                 >
                   {t("about")}
                 </Link>
-                <a
-                  href="#contact"
-                  className="hover:text-orange-200 transition-colors"
-                >
-                  {t("contact")}
-                </a>
               </nav>
               <div className="flex items-center gap-2">
                 <LanguageToggle />
@@ -272,34 +311,6 @@ export default function RestaurantMenu({ params }) {
               {getLocalizedText(restaurant, "description")}
             </p>
           )}
-        </div>
-      </div>
-
-      {/* Restaurant Info */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            {getLocalizedText(restaurant, "address") && (
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                <span className="truncate">
-                  {getLocalizedText(restaurant, "address")}
-                </span>
-              </div>
-            )}
-            {restaurant.phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                <span>{restaurant.phone}</span>
-              </div>
-            )}
-            {restaurant.email && (
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                <span className="truncate">{restaurant.email}</span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -342,9 +353,36 @@ export default function RestaurantMenu({ params }) {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              {/* Horizontal Scrolling Tabs */}
+              {/* Horizontal Scrolling Tabs with Navigation Buttons */}
               <div className="relative mb-8">
-                <div className="overflow-x-auto scrollbar-hide">
+                {/* Left scroll button */}
+                {canScrollLeft && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md"
+                    onClick={() => scrollTabs("left")}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                )}
+
+                {/* Right scroll button */}
+                {canScrollRight && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md"
+                    onClick={() => scrollTabs("right")}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
+
+                <div
+                  className="overflow-x-auto scrollbar-hide px-8"
+                  ref={tabsRef}
+                >
                   <TabsList className="inline-flex h-auto p-1 bg-gray-100 rounded-lg min-w-full w-max">
                     <TabsTrigger
                       value="all"
@@ -371,7 +409,8 @@ export default function RestaurantMenu({ params }) {
                     const currentPrice = item.salePrice || item.price;
                     const hasDiscount =
                       item.salePrice &&
-                      parseFloat(item.salePrice) < parseFloat(item.price);
+                      Number.parseFloat(item.salePrice) <
+                        Number.parseFloat(item.price);
 
                     return (
                       <Card
@@ -425,11 +464,11 @@ export default function RestaurantMenu({ params }) {
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-lg font-bold text-orange-600">
-                                ${parseFloat(currentPrice).toFixed(2)}
+                                ${Number.parseFloat(currentPrice).toFixed(2)}
                               </span>
                               {hasDiscount && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  ${parseFloat(item.price).toFixed(2)}
+                                  ${Number.parseFloat(item.price).toFixed(2)}
                                 </span>
                               )}
                             </div>
@@ -490,7 +529,7 @@ export default function RestaurantMenu({ params }) {
       {/* Footer */}
       <footer id="contact" className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Restaurant Info */}
             <div>
               <div className="flex items-center mb-4">
@@ -562,37 +601,6 @@ export default function RestaurantMenu({ params }) {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4">{t("quickLinks")}</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#menu"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    {t("menu")}
-                  </a>
-                </li>
-                <li>
-                  <Link
-                    href={`/${restaurant.slug}/about`}
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    {t("about")}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${restaurant.slug}/dashboard/manage`}
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    {t("dashboard")}
-                  </Link>
-                </li>
-              </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">

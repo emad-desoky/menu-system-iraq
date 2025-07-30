@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   Card,
@@ -28,6 +27,8 @@ import {
   ExternalLink,
   ImageIcon,
   Languages,
+  Facebook,
+  Instagram,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -47,7 +48,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
   const [categoryImagePreview, setCategoryImagePreview] = useState(null);
-
   const { t, isRTL, language } = useLanguage();
 
   const getLocalizedText = (item, field) => {
@@ -184,7 +184,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         name="restaurantId"
                         value={restaurant.id}
                       />
-
                       {/* Bilingual Name Fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -224,7 +223,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           />
                         </div>
                       </div>
-
                       {/* Bilingual Description Fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -252,7 +250,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           />
                         </div>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="sortOrder">{t("sortOrder")}</Label>
@@ -293,7 +290,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           </div>
                         </div>
                       </div>
-
                       <Button
                         type="submit"
                         className="bg-orange-600 hover:bg-orange-700"
@@ -414,7 +410,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             name="restaurantId"
                             value={restaurant.id}
                           />
-
                           {/* Bilingual Name Fields */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -454,7 +449,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               />
                             </div>
                           </div>
-
                           {/* Bilingual Description Fields */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -482,7 +476,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               />
                             </div>
                           </div>
-
                           {/* Price Fields */}
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -531,7 +524,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               </Select>
                             </div>
                           </div>
-
                           {/* Bilingual Ingredients & Allergens */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -559,7 +551,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               />
                             </div>
                           </div>
-
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="allergensAr">
@@ -586,7 +577,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               />
                             </div>
                           </div>
-
                           {/* Image and Options */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -646,7 +636,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               </div>
                             </div>
                           </div>
-
                           {/* Dietary Options */}
                           <div className="grid grid-cols-3 gap-4">
                             <div>
@@ -702,7 +691,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               </Select>
                             </div>
                           </div>
-
                           <Button
                             type="submit"
                             className="bg-orange-600 hover:bg-orange-700"
@@ -852,7 +840,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     name="restaurantId"
                     value={restaurant.id}
                   />
-
                   {/* Our Story - Bilingual */}
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
@@ -894,7 +881,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   {/* Mission & Vision - Bilingual */}
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
@@ -936,7 +922,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label
@@ -977,7 +962,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   {/* Chef & History - Bilingual */}
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
@@ -1019,7 +1003,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label
@@ -1060,7 +1043,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="googleMapsUrl">{t("googleMapsUrl")}</Label>
                     <Input
@@ -1073,6 +1055,42 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     <p className="text-xs text-gray-600 mt-1">
                       يمكنك استخدام رابط مباشر من خرائط جوجل أو رابط التضمين
                     </p>
+                  </div>
+
+                  {/* Social Media Links */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label
+                        htmlFor="facebookUrl"
+                        className="flex items-center gap-2"
+                      >
+                        <Facebook className="w-4 h-4 text-blue-600" />
+                        Facebook Page URL
+                      </Label>
+                      <Input
+                        id="facebookUrl"
+                        name="facebookUrl"
+                        defaultValue={restaurant.facebookUrl || ""}
+                        placeholder="https://facebook.com/yourrestaurant"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="instagramUrl"
+                        className="flex items-center gap-2"
+                      >
+                        <Instagram className="w-4 h-4 text-pink-600" />
+                        Instagram Page URL
+                      </Label>
+                      <Input
+                        id="instagramUrl"
+                        name="instagramUrl"
+                        defaultValue={restaurant.instagramUrl || ""}
+                        placeholder="https://instagram.com/yourrestaurant"
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
 
                   <Button
@@ -1104,7 +1122,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     name="restaurantId"
                     value={restaurant.id}
                   />
-
                   {/* Bilingual Restaurant Name */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -1144,7 +1161,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   {/* Logo Upload */}
                   <div>
                     <Label htmlFor="logo">{t("restaurantLogo")}</Label>
@@ -1163,6 +1179,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             src={
                               logoPreview ||
                               restaurant.logo ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg"
                             }
                             alt="Logo preview"
@@ -1177,7 +1194,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       {t("uploadSquareLogo")}
                     </p>
                   </div>
-
                   {/* Banner Color */}
                   <div>
                     <Label htmlFor="bannerColor">{t("bannerColor")}</Label>
@@ -1205,7 +1221,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       {t("choosePrimaryColor")}
                     </p>
                   </div>
-
                   {/* Banner Background Image */}
                   <div>
                     <Label htmlFor="bannerImage">
@@ -1225,6 +1240,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             src={
                               bannerImagePreview ||
                               restaurant.bannerImage ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg"
                             }
                             alt="Banner preview"
@@ -1252,7 +1268,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       للحصول على قراءة أفضل للنص.
                     </p>
                   </div>
-
                   <Button
                     type="submit"
                     className="bg-orange-600 hover:bg-orange-700"
@@ -1286,7 +1301,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       https://{restaurant.slug}.yourdomain.com
                     </code>
                   </div>
-
                   <div>
                     <Label className="text-sm font-medium">
                       {t("dashboardAccess")}
