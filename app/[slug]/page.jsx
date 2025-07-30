@@ -136,13 +136,6 @@ export default function RestaurantMenu({ params }) {
       }
     : {};
 
-  // Filter items based on search and active tab
-  const filteredCategories = restaurant.categories.filter((category) => {
-    const categoryName = getLocalizedText(category, "name").toLowerCase();
-    const matchesSearch = categoryName.includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
-
   const getAllMenuItems = () => {
     return restaurant.categories.flatMap((category) =>
       category.menuItems.map((item) => ({
@@ -193,101 +186,74 @@ export default function RestaurantMenu({ params }) {
 
   const totalCartItems = getTotalItems();
 
-  // Show only first 4 categories in tabs, rest need scrolling
-  const visibleCategories = restaurant.categories.slice(0, 4);
-  const hasMoreCategories = restaurant.categories.length > 4;
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header - Improved Responsiveness */}
-      <header className="md:hidden bg-white border-b shadow-sm sticky top-0 z-40">
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center min-w-0 flex-1 mr-2">
-            {restaurant.logo && (
-              <div className="w-8 h-8 mr-2 flex-shrink-0">
-                <Image
-                  src={restaurant.logo || "/placeholder.svg"}
-                  alt={`${getLocalizedText(restaurant, "name")} logo`}
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-contain rounded"
-                />
-              </div>
-            )}
-            <h1 className="text-base font-bold text-gray-900 truncate">
-              {getLocalizedText(restaurant, "name")}
-            </h1>
-          </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <LanguageToggle />
-            {totalCartItems > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative p-2"
-                onClick={() => {
-                  const cartContext = document.querySelector(
-                    "[data-cart-trigger]"
-                  );
-                  if (cartContext) cartContext.click();
-                }}
-              >
-                <ShoppingCart className="w-4 h-4" />
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-orange-600">
-                  {totalCartItems}
-                </Badge>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Desktop Header */}
+      {/* Unified Header - Same design for all screen sizes */}
       <header
-        className="hidden md:block text-white sticky top-0 z-50 shadow-lg"
+        className="text-white sticky top-0 z-50 shadow-lg"
         style={bannerStyle}
       >
         <div style={overlayStyle} className="w-full h-full">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="flex items-center justify-between h-12 sm:h-16">
+              <div className="flex items-center min-w-0 flex-shrink-0">
                 {restaurant.logo && (
                   <Image
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
-                    width={40}
-                    height={40}
-                    className="mr-3 rounded-lg"
+                    width={32}
+                    height={32}
+                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 mr-1 sm:mr-2 lg:mr-3 rounded-lg flex-shrink-0"
                   />
                 )}
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-xs sm:text-sm lg:text-2xl font-bold truncate">
                   {getLocalizedText(restaurant, "name")}
                 </h1>
               </div>
-              <nav className="flex space-x-8">
+
+              <nav className="flex space-x-2 sm:space-x-4 lg:space-x-8 mx-2 sm:mx-4">
                 <a
                   href="#menu"
-                  className="hover:text-orange-200 transition-colors"
+                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base"
                 >
                   {t("menu")}
                 </a>
                 <Link
                   href={`/${restaurant.slug}/about`}
-                  className="hover:text-orange-200 transition-colors"
+                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base"
                 >
                   {t("about")}
                 </Link>
               </nav>
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <LanguageToggle />
+                {totalCartItems > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="relative p-1 sm:p-2 text-white hover:bg-white hover:bg-opacity-20"
+                    onClick={() => {
+                      const cartContext = document.querySelector(
+                        "[data-cart-trigger]"
+                      );
+                      if (cartContext) cartContext.click();
+                    }}
+                  >
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-orange-600">
+                      {totalCartItems}
+                    </Badge>
+                  </Button>
+                )}
                 <Link href={`/${restaurant.slug}/dashboard/manage`}>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent"
+                    className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent text-xs sm:text-sm px-1 sm:px-2 lg:px-3"
                   >
-                    <Settings className="w-4 h-4 mr-2" />
-                    {t("dashboard")}
+                    <Settings className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 lg:mr-2" />
+                    <span className="hidden sm:inline">{t("dashboard")}</span>
                   </Button>
                 </Link>
               </div>
@@ -296,18 +262,18 @@ export default function RestaurantMenu({ params }) {
         </div>
       </header>
 
-      {/* Hero Section - Desktop Only - Made Responsive */}
+      {/* Hero Section - Responsive */}
       <div
-        className="hidden md:block relative min-h-[20rem] lg:h-80 flex items-center justify-center"
+        className="relative h-32 sm:h-48 lg:h-80 flex items-center justify-center"
         style={bannerStyle}
       >
         <div style={overlayStyle} className="absolute inset-0"></div>
         <div className="text-center text-white z-10 px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h1 className="text-xl sm:text-2xl lg:text-5xl font-bold mb-2 lg:mb-4">
             {getLocalizedText(restaurant, "name")}
           </h1>
           {getLocalizedText(restaurant, "description") && (
-            <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base lg:text-xl opacity-90 max-w-2xl mx-auto px-4">
               {getLocalizedText(restaurant, "description")}
             </p>
           )}

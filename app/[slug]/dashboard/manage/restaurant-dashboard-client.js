@@ -105,35 +105,38 @@ export default function RestaurantDashboardClient({ restaurant }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 sm:py-6 gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link href={`/${restaurant.slug}`}>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 hover:text-gray-900 p-1 sm:p-2"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t("backToMenu")}
+                  <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">{t("backToMenu")}</span>
                 </Button>
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                   {getLocalizedText(restaurant, "name")}
                 </h1>
-                <p className="text-gray-600">{t("restaurantManagement")}</p>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  {t("restaurantManagement")}
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <LanguageToggle />
               <Link href={`/${restaurant.slug}`} target="_blank">
                 <Button
                   variant="outline"
-                  className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                  className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                 >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  {t("viewLiveMenu")}
+                  <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("viewLiveMenu")}</span>
+                  <span className="sm:hidden">عرض</span>
                 </Button>
               </Link>
             </div>
@@ -141,16 +144,37 @@ export default function RestaurantDashboardClient({ restaurant }) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="categories" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="categories">{t("categories")}</TabsTrigger>
-            <TabsTrigger value="menu-items">{t("menuItems")}</TabsTrigger>
-            <TabsTrigger value="about">{t("about")}</TabsTrigger>
-            <TabsTrigger value="appearance">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <Tabs defaultValue="categories" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto">
+            <TabsTrigger
+              value="categories"
+              className="text-xs sm:text-sm py-2 sm:py-3"
+            >
+              {t("categories")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="menu-items"
+              className="text-xs sm:text-sm py-2 sm:py-3"
+            >
+              {t("menuItems")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="about"
+              className="text-xs sm:text-sm py-2 sm:py-3"
+            >
+              {t("about")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="appearance"
+              className="text-xs sm:text-sm py-2 sm:py-3"
+            >
               {t("restaurantAppearance")}
             </TabsTrigger>
-            <TabsTrigger value="settings">
+            <TabsTrigger
+              value="settings"
+              className="text-xs sm:text-sm py-2 sm:py-3"
+            >
               {t("restaurantSettings")}
             </TabsTrigger>
           </TabsList>
@@ -185,7 +209,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         value={restaurant.id}
                       />
                       {/* Bilingual Name Fields */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div>
                           <Label
                             htmlFor="nameAr"
@@ -224,7 +248,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         </div>
                       </div>
                       {/* Bilingual Description Fields */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="descriptionAr">
                             {t("description")} (العربية) - {t("optional")}
@@ -250,7 +274,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                           <Label htmlFor="sortOrder">{t("sortOrder")}</Label>
                           <Input
@@ -292,7 +316,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                       <Button
                         type="submit"
-                        className="bg-orange-600 hover:bg-orange-700"
+                        className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         {t("addCategory")}
@@ -411,7 +435,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             value={restaurant.id}
                           />
                           {/* Bilingual Name Fields */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                               <Label
                                 htmlFor="nameAr"
@@ -450,7 +474,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                           </div>
                           {/* Bilingual Description Fields */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="descriptionAr">
                                 {t("description")} (العربية)
@@ -477,7 +501,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                           </div>
                           {/* Price Fields */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                               <Label htmlFor="price">{t("price")} ($)</Label>
                               <Input
@@ -525,7 +549,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                           </div>
                           {/* Bilingual Ingredients & Allergens */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="ingredientsAr">
                                 {t("ingredients")} (العربية) - {t("optional")}
@@ -551,7 +575,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               />
                             </div>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="allergensAr">
                                 {t("allergens")} (العربية) - {t("optional")}
@@ -578,7 +602,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                           </div>
                           {/* Image and Options */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="image">{t("itemImage")}</Label>
                               <div className="mt-1 flex items-center space-x-4">
@@ -603,7 +627,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 )}
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                               <div>
                                 <Label htmlFor="isAvailable">
                                   {t("availability")}
@@ -637,7 +661,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             </div>
                           </div>
                           {/* Dietary Options */}
-                          <div className="grid grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                               <Label htmlFor="isVegetarian">
                                 {t("vegetarian")}
@@ -693,7 +717,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           </div>
                           <Button
                             type="submit"
-                            className="bg-orange-600 hover:bg-orange-700"
+                            className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             {t("addMenuItem")}
@@ -841,7 +865,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     value={restaurant.id}
                   />
                   {/* Our Story - Bilingual */}
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="aboutStoryAr"
@@ -882,7 +906,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </div>
                   </div>
                   {/* Mission & Vision - Bilingual */}
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="aboutMissionAr"
@@ -922,7 +946,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="aboutVisionAr"
@@ -963,7 +987,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </div>
                   </div>
                   {/* Chef & History - Bilingual */}
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="aboutChefAr"
@@ -1003,7 +1027,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="aboutHistoryAr"
@@ -1058,7 +1082,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                   </div>
 
                   {/* Social Media Links */}
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="facebookUrl"
@@ -1095,7 +1119,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
 
                   <Button
                     type="submit"
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
                   >
                     {t("save")} {t("aboutUsInformation")}
                   </Button>
@@ -1123,7 +1147,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     value={restaurant.id}
                   />
                   {/* Bilingual Restaurant Name */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
                         htmlFor="displayNameAr"
@@ -1270,7 +1294,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                   </div>
                   <Button
                     type="submit"
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
                   >
                     {t("updateAppearance")}
                   </Button>

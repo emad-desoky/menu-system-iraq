@@ -11,15 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Plus,
-  Store,
-  Eye,
-  LogOut,
-  Trash2,
-  Users,
-  Languages,
-} from "lucide-react";
+import { Plus, Store, Eye, LogOut, Trash2, Users } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import { logout, createRestaurant, deleteRestaurant } from "./actions";
@@ -31,29 +23,32 @@ export default function AdminDashboardClient({ restaurants }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 sm:py-6 gap-4">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
-                <Users className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-2 sm:mr-4">
+                <Users className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                   {t("adminDashboard")}
                 </h1>
-                <p className="text-gray-600">{t("manageAllRestaurants")}</p>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  {t("manageAllRestaurants")}
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <LanguageToggle />
               <form action={logout}>
                 <Button
                   variant="outline"
                   type="submit"
-                  className="border-gray-300 bg-transparent"
+                  className="border-gray-300 bg-transparent text-xs sm:text-sm px-2 sm:px-4"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  {t("logout")}
+                  <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("logout")}</span>
+                  <span className="sm:hidden">خروج</span>
                 </Button>
               </form>
             </div>
@@ -61,22 +56,22 @@ export default function AdminDashboardClient({ restaurants }) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Add Restaurant Form */}
-        <Card className="mb-8 border-orange-200 bg-orange-50/50">
+        <Card className="mb-6 sm:mb-8 border-orange-200 bg-orange-50/50">
           <CardHeader>
-            <CardTitle className="text-xl text-orange-800 flex items-center">
-              <Plus className="w-5 h-5 mr-2" />
+            <CardTitle className="text-lg sm:text-xl text-orange-800 flex items-center">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               {t("addNewRestaurant")}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm sm:text-base">
               إنشاء مطعم جديد في النظام مع جميع التفاصيل الضرورية
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={createRestaurant} className="space-y-6">
+            <form action={createRestaurant} className="space-y-4 sm:space-y-6">
               {/* Bilingual Restaurant Name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="nameAr" className="flex items-center gap-2">
                     {t("restaurantName")} (العربية)
@@ -175,7 +170,7 @@ export default function AdminDashboardClient({ restaurants }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">{t("email")}</Label>
                   <Input
@@ -209,7 +204,7 @@ export default function AdminDashboardClient({ restaurants }) {
               </div>
 
               {/* Google Maps and Social Media Links */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="googleMapsUrl">Google Maps URL</Label>
                   <Input
@@ -241,7 +236,7 @@ export default function AdminDashboardClient({ restaurants }) {
 
               <Button
                 type="submit"
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t("createRestaurant")}
@@ -251,27 +246,27 @@ export default function AdminDashboardClient({ restaurants }) {
         </Card>
 
         {/* Restaurants List */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
               {t("allRestaurants")} ({restaurants.length})
             </h2>
           </div>
 
           {restaurants.length === 0 ? (
             <Card>
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <Store className="w-16 h-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">
+              <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
+                <Store className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mb-4" />
+                <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2">
                   {t("noRestaurantsYet")}
                 </h3>
-                <p className="text-gray-600 text-center max-w-md">
+                <p className="text-gray-600 text-center max-w-md text-sm sm:text-base">
                   أنشئ أول مطعم لك باستخدام النموذج أعلاه للبدء في المنصة.
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {restaurants.map((restaurant) => (
                 <Card
                   key={restaurant.id}
