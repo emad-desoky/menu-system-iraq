@@ -17,16 +17,15 @@ import {
   Instagram,
   ChevronLeft,
   ChevronRight,
+  Menu,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import LanguageToggle from "@/components/LanguageToggle";
-import Cart from "@/components/Cart";
-import CartSidebar from "@/components/CartSidebar";
 import MenuItemModal from "@/components/MenuItemModal";
-import RestaurantRating from "@/components/RestaurantRating";
 
 export default function RestaurantMenu({ params }) {
   const [restaurant, setRestaurant] = useState(null);
@@ -37,9 +36,10 @@ export default function RestaurantMenu({ params }) {
   const [activeTab, setActiveTab] = useState("all");
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const tabsRef = useRef(null);
   const { t, isRTL, language } = useLanguage();
-  const { addToCart, getTotalItems } = useCart();
+  const { addToCart, getTotalItems, getTotalPrice } = useCart();
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -103,6 +103,10 @@ export default function RestaurantMenu({ params }) {
       return item[`${field}Ar`] || item[field] || "";
     }
     return item[`${field}En`] || item[field] || "";
+  };
+
+  const formatPrice = (price) => {
+    return `${Number.parseFloat(price).toFixed(0)} IQD`;
   };
 
   if (loading) {
@@ -188,8 +192,7 @@ export default function RestaurantMenu({ params }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Unified Header - Same design for all screen sizes */}
-      {/* Updated Header - Clean background without image */}
+      {/* Updated Header with Mobile Menu */}
       <header
         className="bg-white text-gray-900 sticky top-0 z-50 shadow-lg border-b"
         style={{ backgroundColor: restaurant.bannerColor || "#ea580c" }}
@@ -197,55 +200,60 @@ export default function RestaurantMenu({ params }) {
         <div className="w-full h-full">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-12 sm:h-16">
-              <div className="flex items-center min-w-0 flex-shrink-0">
+              {/* Left side - Mobile menu button (for mobile) */}
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="md:hidden p-1 text-white hover:bg-white hover:bg-opacity-20 mr-2"
+                  onClick={() => setShowMobileMenu(!showMobileMenu)}
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+
                 {restaurant.logo && (
                   <Image
                     src={restaurant.logo || "/placeholder.svg"}
                     alt={`${getLocalizedText(restaurant, "name")} logo`}
                     width={32}
                     height={32}
-                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 mr-1 sm:mr-2 lg:mr-3 rounded-lg flex-shrink-0"
+                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-lg flex-shrink-0"
                   />
                 )}
-                <h1 className="text-xs sm:text-sm lg:text-2xl font-bold truncate text-white">
-                  {getLocalizedText(restaurant, "name")}
-                </h1>
               </div>
 
-              <nav className="flex space-x-2 sm:space-x-4 lg:space-x-8 mx-2 sm:mx-4">
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex space-x-4 lg:space-x-8">
                 <a
                   href="#menu"
-                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base text-white"
+                  className="hover:text-orange-200 transition-colors font-medium text-sm lg:text-base text-white"
                 >
                   {t("menu")}
                 </a>
                 <Link
                   href={`/${restaurant.slug}/about`}
-                  className="hover:text-orange-200 transition-colors font-medium text-xs sm:text-sm lg:text-base text-white"
+                  className="hover:text-orange-200 transition-colors font-medium text-sm lg:text-base text-white"
                 >
                   {t("about")}
                 </Link>
               </nav>
 
+              {/* Right side - Cart, Language, Settings */}
               <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <LanguageToggle />
                 {totalCartItems > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="relative p-1 sm:p-2 text-white hover:bg-white hover:bg-opacity-20"
-                    onClick={() => {
-                      const cartContext = document.querySelector(
-                        "[data-cart-trigger]"
-                      );
-                      if (cartContext) cartContext.click();
-                    }}
-                  >
-                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-orange-600">
-                      {totalCartItems}
-                    </Badge>
-                  </Button>
+                  <Link href={`/${restaurant.slug}/cart`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="relative p-1 sm:p-2 text-white hover:bg-white hover:bg-opacity-20"
+                    >
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-orange-600">
+                        {totalCartItems}
+                      </Badge>
+                    </Button>
+                  </Link>
                 )}
                 <Link href={`/${restaurant.slug}/dashboard/manage`}>
                   <Button
@@ -253,18 +261,38 @@ export default function RestaurantMenu({ params }) {
                     size="sm"
                     className="border-white text-white hover:bg-white hover:text-orange-600 bg-transparent text-xs sm:text-sm px-1 sm:px-2 lg:px-3"
                   >
-                    <Settings className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 lg:mr-2" />
-                    <span className="hidden sm:inline">{t("dashboard")}</span>
+                    <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </Link>
               </div>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {showMobileMenu && (
+              <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t z-40">
+                <div className="py-2">
+                  <a
+                    href="#menu"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    {t("menu")}
+                  </a>
+                  <Link
+                    href={`/${restaurant.slug}/about`}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    {t("about")}
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Hero Section - Responsive */}
-      {/* Hero Section - Keep the background image here */}
+      {/* Hero Section */}
       <div
         className="relative h-32 sm:h-48 lg:h-80 flex items-center justify-center"
         style={bannerStyle}
@@ -296,10 +324,14 @@ export default function RestaurantMenu({ params }) {
           </div>
         </div>
 
-        {/* Restaurant Rating Component */}
-        <RestaurantRating
-          restaurantName={getLocalizedText(restaurant, "name")}
-        />
+        {/* Rating moved to separate page - add link */}
+        <div className="mb-6 text-center">
+          <Link href={`/${restaurant.slug}/rating`}>
+            <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+              {t("rateRestaurant")}
+            </Button>
+          </Link>
+        </div>
 
         {/* Menu Section */}
         <section id="menu" className="mb-16">
@@ -323,7 +355,6 @@ export default function RestaurantMenu({ params }) {
             >
               {/* Horizontal Scrolling Tabs with Navigation Buttons */}
               <div className="relative mb-8">
-                {/* Left scroll button */}
                 {canScrollLeft && (
                   <Button
                     variant="outline"
@@ -335,7 +366,6 @@ export default function RestaurantMenu({ params }) {
                   </Button>
                 )}
 
-                {/* Right scroll button */}
                 {canScrollRight && (
                   <Button
                     variant="outline"
@@ -386,7 +416,7 @@ export default function RestaurantMenu({ params }) {
                         className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
                         onClick={() => handleItemClick(item)}
                       >
-                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden border-2 border-gray-200">
                           {item.image ? (
                             <Image
                               src={item.image || "/placeholder.svg"}
@@ -431,12 +461,12 @@ export default function RestaurantMenu({ params }) {
                           )}
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col">
-                              <span className="text-lg font-bold text-orange-600">
-                                ${Number.parseFloat(currentPrice).toFixed(2)}
+                              <span className="text-sm font-bold text-orange-600">
+                                {formatPrice(currentPrice)}
                               </span>
                               {hasDiscount && (
-                                <span className="text-sm text-gray-500 line-through">
-                                  ${Number.parseFloat(item.price).toFixed(2)}
+                                <span className="text-xs text-gray-500 line-through">
+                                  {formatPrice(item.price)}
                                 </span>
                               )}
                             </div>
@@ -446,10 +476,10 @@ export default function RestaurantMenu({ params }) {
                                 e.stopPropagation();
                                 handleAddToCart(item);
                               }}
-                              className="bg-orange-600 hover:bg-orange-700 text-xs px-3 py-1"
+                              className="bg-orange-600 hover:bg-orange-700 p-2 h-8 w-8"
                               disabled={!item.isAvailable}
                             >
-                              {t("addToCart")}
+                              <Plus className="w-4 h-4" />
                             </Button>
                           </div>
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -559,7 +589,13 @@ export default function RestaurantMenu({ params }) {
                 {restaurant.phone && (
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                    <p className="text-gray-400">{restaurant.phone}</p>
+                    <p
+                      className="text-gray-400"
+                      dir="ltr"
+                      style={{ textAlign: isRTL ? "right" : "left" }}
+                    >
+                      {restaurant.phone}
+                    </p>
                   </div>
                 )}
                 {restaurant.email && (
@@ -581,9 +617,24 @@ export default function RestaurantMenu({ params }) {
         </div>
       </footer>
 
-      {/* Cart and Modals */}
-      <Cart />
-      <CartSidebar />
+      {/* Fixed Bottom Cart Button - Updated to navigate to cart page */}
+      {totalCartItems > 0 && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Link href={`/${restaurant.slug}/cart`}>
+            <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full p-4 shadow-lg flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" />
+              <span className="font-medium">
+                {formatPrice(getTotalPrice())}
+              </span>
+              <Badge className="bg-orange-500 text-white ml-1">
+                {totalCartItems}
+              </Badge>
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Modals */}
       <MenuItemModal
         item={selectedMenuItem}
         isOpen={showItemModal}

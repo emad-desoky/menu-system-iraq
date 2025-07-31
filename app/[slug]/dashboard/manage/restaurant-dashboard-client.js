@@ -57,6 +57,10 @@ export default function RestaurantDashboardClient({ restaurant }) {
     return item[`${field}En`] || item[field] || "";
   };
 
+  const formatPrice = (price) => {
+    return `${Number.parseFloat(price).toFixed(0)} IQD`;
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -503,27 +507,27 @@ export default function RestaurantDashboardClient({ restaurant }) {
                           {/* Price Fields */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                              <Label htmlFor="price">{t("price")} ($)</Label>
+                              <Label htmlFor="price">{t("price")} (IQD)</Label>
                               <Input
                                 id="price"
                                 name="price"
                                 type="number"
-                                step="0.01"
-                                placeholder="19.99"
+                                step="1"
+                                placeholder="25000"
                                 required
                                 className="mt-1"
                               />
                             </div>
                             <div>
                               <Label htmlFor="salePrice">
-                                {t("salePrice")} ($) - {t("optional")}
+                                {t("salePrice")} (IQD) - {t("optional")}
                               </Label>
                               <Input
                                 id="salePrice"
                                 name="salePrice"
                                 type="number"
-                                step="0.01"
-                                placeholder="15.99"
+                                step="1"
+                                placeholder="20000"
                                 className="mt-1"
                               />
                             </div>
@@ -789,20 +793,15 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       variant="outline"
                                       className="text-orange-600 border-orange-600"
                                     >
-                                      $
-                                      {typeof item.price === "string"
-                                        ? item.price
-                                        : item.price.toString()}
+                                      {formatPrice(item.price)}
                                     </Badge>
                                     {item.salePrice && (
                                       <Badge
                                         variant="outline"
                                         className="text-red-600 border-red-600"
                                       >
-                                        {t("sale")}: $
-                                        {typeof item.salePrice === "string"
-                                          ? item.salePrice
-                                          : item.salePrice.toString()}
+                                        {t("sale")}:{" "}
+                                        {formatPrice(item.salePrice)}
                                       </Badge>
                                     )}
                                     <Badge
