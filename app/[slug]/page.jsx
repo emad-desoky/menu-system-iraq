@@ -418,7 +418,7 @@ export default function RestaurantMenu({ params }) {
                     return (
                       <Card
                         key={item.id}
-                        className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                        className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group p-0"
                         onClick={() => handleItemClick(item)}
                       >
                         <div className="aspect-square bg-gray-200 relative overflow-hidden">
@@ -455,7 +455,7 @@ export default function RestaurantMenu({ params }) {
                             </div>
                           )}
                         </div>
-                        <CardContent className="p-3 md:p-4">
+                        <div className="p-3 md:p-4">
                           <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm md:text-base mb-1">
                             {getLocalizedText(item, "name")}
                           </h4>
@@ -513,7 +513,7 @@ export default function RestaurantMenu({ params }) {
                               </Badge>
                             )}
                           </div>
-                        </CardContent>
+                        </div>
                       </Card>
                     );
                   })}
