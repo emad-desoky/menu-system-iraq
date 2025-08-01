@@ -236,6 +236,12 @@ export default function RestaurantMenu({ params }) {
                 >
                   {t("about")}
                 </Link>
+                <Link
+                  href={`/${restaurant.slug}/rating`}
+                  className="hover:text-orange-200 transition-colors font-medium text-sm lg:text-base text-white"
+                >
+                  {t("rateRestaurant")}
+                </Link>
               </nav>
 
               {/* Right side - Cart, Language, Settings */}
@@ -285,6 +291,13 @@ export default function RestaurantMenu({ params }) {
                   >
                     {t("about")}
                   </Link>
+                  <Link
+                    href={`/${restaurant.slug}/rating`}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    {t("rateRestaurant")}
+                  </Link>
                 </div>
               </div>
             )}
@@ -294,7 +307,7 @@ export default function RestaurantMenu({ params }) {
 
       {/* Hero Section */}
       <div
-        className="relative h-32 sm:h-48 lg:h-80 flex items-center justify-center"
+        className="relative h-96 sm:h-64 lg:h-[700px] flex items-center justify-center"
         style={bannerStyle}
       >
         <div style={overlayStyle} className="absolute inset-0"></div>
@@ -303,10 +316,13 @@ export default function RestaurantMenu({ params }) {
             {getLocalizedText(restaurant, "name")}
           </h1>
           {getLocalizedText(restaurant, "description") && (
-            <p className="text-sm sm:text-base lg:text-xl opacity-90 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base lg:text-xl opacity-90 max-w-2xl mx-auto px-4 mb-4">
               {getLocalizedText(restaurant, "description")}
             </p>
           )}
+          <h2 className="text-lg sm:text-xl lg:text-3xl font-semibold opacity-95">
+            {t("ourMenu")}
+          </h2>
         </div>
       </div>
 
@@ -324,20 +340,8 @@ export default function RestaurantMenu({ params }) {
           </div>
         </div>
 
-        {/* Rating moved to separate page - add link */}
-        <div className="mb-6 text-center">
-          <Link href={`/${restaurant.slug}/rating`}>
-            <Button className="bg-orange-600 hover:bg-orange-700 text-white">
-              {t("rateRestaurant")}
-            </Button>
-          </Link>
-        </div>
-
         {/* Menu Section */}
         <section id="menu" className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            {t("ourMenu")}
-          </h2>
           {restaurant.categories.length === 0 ? (
             <Card className="text-center py-16">
               <CardContent>
@@ -380,6 +384,7 @@ export default function RestaurantMenu({ params }) {
                 <div
                   className="overflow-x-auto scrollbar-hide px-8"
                   ref={tabsRef}
+                  dir={isRTL ? "rtl" : "ltr"}
                 >
                   <TabsList className="inline-flex h-auto p-1 bg-gray-100 rounded-lg min-w-full w-max">
                     <TabsTrigger
@@ -416,7 +421,7 @@ export default function RestaurantMenu({ params }) {
                         className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
                         onClick={() => handleItemClick(item)}
                       >
-                        <div className="aspect-square bg-gray-200 relative overflow-hidden border-2 border-gray-200">
+                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
                           {item.image ? (
                             <Image
                               src={item.image || "/placeholder.svg"}
