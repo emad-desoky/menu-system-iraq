@@ -123,14 +123,15 @@ export default function CartPage({ params }) {
             {cartItems.map((item) => (
               <Card key={item.id} className="overflow-hidden">
                 <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 border-2 border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {/* Image */}
+                    <div className="w-24 h-24 mx-auto sm:mx-0 bg-gray-200 rounded-lg overflow-hidden border-2 border-gray-200">
                       {item.image ? (
                         <Image
                           src={item.image || "/placeholder.svg"}
                           alt={getLocalizedText(item, "name")}
-                          width={64}
-                          height={64}
+                          width={96}
+                          height={96}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -142,49 +143,54 @@ export default function CartPage({ params }) {
                       )}
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
-                        {getLocalizedText(item, "name")}
-                      </h3>
-                      <p className="text-orange-600 font-bold">
-                        {formatPrice(item.salePrice || item.price)}
-                      </p>
-                    </div>
+                    {/* Details and Actions */}
+                    <div className="flex flex-col flex-1 min-w-0 gap-2">
+                      {/* Title and Price */}
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-center sm:text-left">
+                          {getLocalizedText(item, "name")}
+                        </h3>
+                        <p className="text-orange-600 font-bold text-center sm:text-left">
+                          {formatPrice(item.salePrice || item.price)}
+                        </p>
+                      </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
-                        className="h-8 w-8 p-0"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <span className="w-8 text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
-                        className="h-8 w-8 p-0"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
+                      {/* Quantity and Delete */}
+                      <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          className="h-8 w-8 p-0"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="w-8 text-center font-medium">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                          className="h-8 w-8 p-0"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

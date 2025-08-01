@@ -320,9 +320,6 @@ export default function RestaurantMenu({ params }) {
               {getLocalizedText(restaurant, "description")}
             </p>
           )}
-          <h2 className="text-lg sm:text-xl lg:text-3xl font-semibold opacity-95">
-            {t("ourMenu")}
-          </h2>
         </div>
       </div>
 
@@ -359,7 +356,7 @@ export default function RestaurantMenu({ params }) {
             >
               {/* Horizontal Scrolling Tabs with Navigation Buttons */}
               <div className="relative mb-8">
-                {canScrollLeft && (
+                {/* {canScrollLeft && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -379,7 +376,7 @@ export default function RestaurantMenu({ params }) {
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
-                )}
+                )} */}
 
                 <div
                   className="overflow-x-auto scrollbar-hide px-8"
