@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MapPin,
   Phone,
@@ -15,10 +14,9 @@ import {
   ShoppingCart,
   Facebook,
   Instagram,
-  ChevronLeft,
-  ChevronRight,
   Menu,
   Plus,
+  ArrowUp,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -37,7 +35,9 @@ export default function RestaurantMenu({ params }) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const tabsRef = useRef(null);
+
   const { t, isRTL, language } = useLanguage();
   const { addToCart, getTotalItems, getTotalPrice } = useCart();
 
@@ -85,6 +85,18 @@ export default function RestaurantMenu({ params }) {
     };
   }, [restaurant]);
 
+  // Handle scroll events for scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      setShowScrollTop(scrollTop > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const scrollTabs = (direction) => {
     if (tabsRef.current) {
       const scrollAmount = 200;
@@ -93,6 +105,26 @@ export default function RestaurantMenu({ params }) {
         (direction === "left" ? -scrollAmount : scrollAmount);
       tabsRef.current.scrollTo({
         left: newScrollLeft,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollToCategory = (categoryId) => {
+    setActiveTab(categoryId);
+    const categoryElement = document.getElementById(`category-${categoryId}`);
+    if (categoryElement) {
+      const headerHeight = 140; // Approximate height of header + sticky tabs
+      const elementPosition = categoryElement.offsetTop - headerHeight;
+      window.scrollTo({
+        top: elementPosition,
         behavior: "smooth",
       });
     }
@@ -145,6 +177,7 @@ export default function RestaurantMenu({ params }) {
       category.menuItems.map((item) => ({
         ...item,
         categoryName: getLocalizedText(category, "name"),
+        categoryId: category.id,
       }))
     );
   };
@@ -161,6 +194,7 @@ export default function RestaurantMenu({ params }) {
         items = category.menuItems.map((item) => ({
           ...item,
           categoryName: getLocalizedText(category, "name"),
+          categoryId: category.id,
         }));
       }
     }
@@ -179,6 +213,25 @@ export default function RestaurantMenu({ params }) {
     return items;
   };
 
+  const groupItemsByCategory = () => {
+    const grouped = {};
+    const allItems = getAllMenuItems();
+
+    restaurant.categories.forEach((category) => {
+      const categoryItems = allItems.filter(
+        (item) => item.categoryId === category.id
+      );
+      if (categoryItems.length > 0) {
+        grouped[category.id] = {
+          category,
+          items: categoryItems,
+        };
+      }
+    });
+
+    return grouped;
+  };
+
   const handleItemClick = (item) => {
     setSelectedMenuItem(item);
     setShowItemModal(true);
@@ -189,6 +242,7 @@ export default function RestaurantMenu({ params }) {
   };
 
   const totalCartItems = getTotalItems();
+  const groupedItems = groupItemsByCategory();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -210,7 +264,6 @@ export default function RestaurantMenu({ params }) {
                 >
                   <Menu className="w-5 h-5" />
                 </Button>
-
                 {restaurant.logo && (
                   <Image
                     src={restaurant.logo || "/placeholder.svg"}
@@ -221,7 +274,6 @@ export default function RestaurantMenu({ params }) {
                   />
                 )}
               </div>
-
               {/* Desktop Navigation */}
               <nav className="hidden md:flex space-x-4 lg:space-x-8">
                 <a
@@ -243,7 +295,6 @@ export default function RestaurantMenu({ params }) {
                   {t("rateRestaurant")}
                 </Link>
               </nav>
-
               {/* Right side - Cart, Language, Settings */}
               <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <LanguageToggle />
@@ -272,7 +323,6 @@ export default function RestaurantMenu({ params }) {
                 </Link>
               </div>
             </div>
-
             {/* Mobile Menu Dropdown */}
             {showMobileMenu && (
               <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t z-40">
@@ -323,6 +373,49 @@ export default function RestaurantMenu({ params }) {
         </div>
       </div>
 
+      {/* Sticky Category Tabs */}
+      <div className="sticky top-12 sm:top-16 z-40 bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative py-4">
+            <div
+              className="overflow-x-auto scrollbar-hide"
+              ref={tabsRef}
+              dir={isRTL ? "rtl" : "ltr"}
+            >
+              <div className="inline-flex h-auto p-1 bg-gray-100 rounded-lg min-w-full w-max">
+                <Button
+                  variant={activeTab === "all" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => scrollToCategory("all")}
+                  className={`px-4 py-3 text-sm font-medium rounded-lg whitespace-nowrap ${
+                    activeTab === "all"
+                      ? "bg-orange-600 hover:bg-orange-700 text-white"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                  }`}
+                >
+                  {t("all")}
+                </Button>
+                {restaurant.categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={activeTab === category.id ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => scrollToCategory(category.id)}
+                    className={`px-4 py-3 text-sm font-medium rounded-lg whitespace-nowrap ${
+                      activeTab === category.id
+                        ? "bg-orange-600 hover:bg-orange-700 text-white"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                    }`}
+                  >
+                    {getLocalizedText(category, "name")}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search */}
         <div className="mb-6">
@@ -348,183 +441,263 @@ export default function RestaurantMenu({ params }) {
                 <p className="text-gray-600">{t("menuComingSoonDesc")}</p>
               </CardContent>
             </Card>
-          ) : (
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              {/* Horizontal Scrolling Tabs with Navigation Buttons */}
-              <div className="relative mb-8">
-                {/* {canScrollLeft && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md"
-                    onClick={() => scrollTabs("left")}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                )}
-
-                {canScrollRight && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md"
-                    onClick={() => scrollTabs("right")}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                )} */}
-
-                <div
-                  className="overflow-x-auto scrollbar-hide px-8"
-                  ref={tabsRef}
-                  dir={isRTL ? "rtl" : "ltr"}
-                >
-                  <TabsList className="inline-flex h-auto p-1 bg-gray-100 rounded-lg min-w-full w-max">
-                    <TabsTrigger
-                      value="all"
-                      className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white whitespace-nowrap"
-                    >
-                      {t("all")}
-                    </TabsTrigger>
-                    {restaurant.categories.map((category) => (
-                      <TabsTrigger
-                        key={category.id}
-                        value={category.id}
-                        className="px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white whitespace-nowrap"
-                      >
-                        {getLocalizedText(category, "name")}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
-              </div>
-
-              <TabsContent value={activeTab} className="mt-0">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                  {getFilteredItems().map((item) => {
-                    const currentPrice = item.salePrice || item.price;
-                    const hasDiscount =
-                      item.salePrice &&
-                      Number.parseFloat(item.salePrice) <
-                        Number.parseFloat(item.price);
-
-                    return (
-                      <Card
-                        key={item.id}
-                        className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group p-0"
-                        onClick={() => handleItemClick(item)}
-                      >
-                        <div className="aspect-square bg-gray-200 relative overflow-hidden">
-                          {item.image ? (
-                            <Image
-                              src={item.image || "/placeholder.svg"}
-                              alt={
-                                item.imageAlt || getLocalizedText(item, "name")
-                              }
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
-                              <div className="text-gray-400 text-center">
-                                <div className="w-8 h-8 mx-auto mb-1 bg-gray-300 rounded"></div>
-                                <p className="text-xs">{t("noImage")}</p>
-                              </div>
-                            </div>
-                          )}
-                          {hasDiscount && (
-                            <Badge className="absolute top-2 right-2 bg-red-500 text-white text-xs">
-                              {t("sale")}
-                            </Badge>
-                          )}
-                          {!item.isAvailable && (
-                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                              <Badge
-                                variant="secondary"
-                                className="bg-gray-800 text-white"
-                              >
-                                {t("notAvailable")}
-                              </Badge>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-3 md:p-4">
-                          <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm md:text-base mb-1">
-                            {getLocalizedText(item, "name")}
-                          </h4>
-                          {getLocalizedText(item, "description") && (
-                            <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-2">
-                              {getLocalizedText(item, "description")}
-                            </p>
-                          )}
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
-                              <span className="text-sm font-bold text-orange-600">
-                                {formatPrice(currentPrice)}
-                              </span>
+          ) : activeTab === "all" && !searchTerm ? (
+            // Show all categories grouped
+            <div className="space-y-12">
+              {Object.entries(groupedItems).map(
+                ([categoryId, { category, items }]) => (
+                  <div key={categoryId} id={`category-${categoryId}`}>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b">
+                      {getLocalizedText(category, "name")}
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                      {items.map((item) => {
+                        const currentPrice = item.salePrice || item.price;
+                        const hasDiscount =
+                          item.salePrice &&
+                          Number.parseFloat(item.salePrice) <
+                            Number.parseFloat(item.price);
+                        return (
+                          <Card
+                            key={item.id}
+                            className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group p-0"
+                            onClick={() => handleItemClick(item)}
+                          >
+                            <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                              {item.image ? (
+                                <Image
+                                  src={item.image || "/placeholder.svg"}
+                                  alt={
+                                    item.imageAlt ||
+                                    getLocalizedText(item, "name")
+                                  }
+                                  fill
+                                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              ) : (
+                                <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
+                                  <div className="text-gray-400 text-center">
+                                    <div className="w-8 h-8 mx-auto mb-1 bg-gray-300 rounded"></div>
+                                    <p className="text-xs">{t("noImage")}</p>
+                                  </div>
+                                </div>
+                              )}
                               {hasDiscount && (
-                                <span className="text-xs text-gray-500 line-through">
-                                  {formatPrice(item.price)}
-                                </span>
+                                <Badge className="absolute top-2 right-2 bg-red-500 text-white text-xs">
+                                  {t("sale")}
+                                </Badge>
+                              )}
+                              {!item.isAvailable && (
+                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                  <Badge
+                                    variant="secondary"
+                                    className="bg-gray-800 text-white"
+                                  >
+                                    {t("notAvailable")}
+                                  </Badge>
+                                </div>
                               )}
                             </div>
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleAddToCart(item);
-                              }}
-                              className="bg-orange-600 hover:bg-orange-700 p-2 h-8 w-8"
-                              disabled={!item.isAvailable}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {item.isVegetarian && (
-                              <Badge
-                                variant="outline"
-                                className="text-green-600 border-green-600 text-xs"
-                              >
-                                {t("vegetarian")}
-                              </Badge>
-                            )}
-                            {item.isVegan && (
-                              <Badge
-                                variant="outline"
-                                className="text-green-700 border-green-700 text-xs"
-                              >
-                                {t("vegan")}
-                              </Badge>
-                            )}
-                            {item.isGlutenFree && (
-                              <Badge
-                                variant="outline"
-                                className="text-blue-600 border-blue-600 text-xs"
-                              >
-                                {t("glutenFree")}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-                {getFilteredItems().length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">{t("noItemsFound")}</p>
+                            <div className="p-3 md:p-4">
+                              <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm md:text-base mb-1">
+                                {getLocalizedText(item, "name")}
+                              </h4>
+                              {getLocalizedText(item, "description") && (
+                                <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-2">
+                                  {getLocalizedText(item, "description")}
+                                </p>
+                              )}
+                              <div className="flex items-center justify-between">
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold text-orange-600">
+                                    {formatPrice(currentPrice)}
+                                  </span>
+                                  {hasDiscount && (
+                                    <span className="text-xs text-gray-500 line-through">
+                                      {formatPrice(item.price)}
+                                    </span>
+                                  )}
+                                </div>
+                                <Button
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddToCart(item);
+                                  }}
+                                  className="bg-orange-600 hover:bg-orange-700 p-2 h-8 w-8"
+                                  disabled={!item.isAvailable}
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {item.isVegetarian && (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-green-600 border-green-600 text-xs"
+                                  >
+                                    {t("vegetarian")}
+                                  </Badge>
+                                )}
+                                {item.isVegan && (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-green-700 border-green-700 text-xs"
+                                  >
+                                    {t("vegan")}
+                                  </Badge>
+                                )}
+                                {item.isGlutenFree && (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-blue-600 border-blue-600 text-xs"
+                                  >
+                                    {t("glutenFree")}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
                   </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                )
+              )}
+            </div>
+          ) : (
+            // Show filtered items or specific category
+            <div id={`category-${activeTab}`}>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {getFilteredItems().map((item) => {
+                  const currentPrice = item.salePrice || item.price;
+                  const hasDiscount =
+                    item.salePrice &&
+                    Number.parseFloat(item.salePrice) <
+                      Number.parseFloat(item.price);
+                  return (
+                    <Card
+                      key={item.id}
+                      className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group p-0"
+                      onClick={() => handleItemClick(item)}
+                    >
+                      <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                        {item.image ? (
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={
+                              item.imageAlt || getLocalizedText(item, "name")
+                            }
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
+                            <div className="text-gray-400 text-center">
+                              <div className="w-8 h-8 mx-auto mb-1 bg-gray-300 rounded"></div>
+                              <p className="text-xs">{t("noImage")}</p>
+                            </div>
+                          </div>
+                        )}
+                        {hasDiscount && (
+                          <Badge className="absolute top-2 right-2 bg-red-500 text-white text-xs">
+                            {t("sale")}
+                          </Badge>
+                        )}
+                        {!item.isAvailable && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <Badge
+                              variant="secondary"
+                              className="bg-gray-800 text-white"
+                            >
+                              {t("notAvailable")}
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 md:p-4">
+                        <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm md:text-base mb-1">
+                          {getLocalizedText(item, "name")}
+                        </h4>
+                        {getLocalizedText(item, "description") && (
+                          <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-2">
+                            {getLocalizedText(item, "description")}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-orange-600">
+                              {formatPrice(currentPrice)}
+                            </span>
+                            {hasDiscount && (
+                              <span className="text-xs text-gray-500 line-through">
+                                {formatPrice(item.price)}
+                              </span>
+                            )}
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToCart(item);
+                            }}
+                            className="bg-orange-600 hover:bg-orange-700 p-2 h-8 w-8"
+                            disabled={!item.isAvailable}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {item.isVegetarian && (
+                            <Badge
+                              variant="outline"
+                              className="text-green-600 border-green-600 text-xs"
+                            >
+                              {t("vegetarian")}
+                            </Badge>
+                          )}
+                          {item.isVegan && (
+                            <Badge
+                              variant="outline"
+                              className="text-green-700 border-green-700 text-xs"
+                            >
+                              {t("vegan")}
+                            </Badge>
+                          )}
+                          {item.isGlutenFree && (
+                            <Badge
+                              variant="outline"
+                              className="text-blue-600 border-blue-600 text-xs"
+                            >
+                              {t("glutenFree")}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+              {getFilteredItems().length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">{t("noItemsFound")}</p>
+                </div>
+              )}
+            </div>
           )}
         </section>
       </main>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <Button
+          onClick={scrollToTop}
+          className="fixed bottom-24 right-4 z-40 w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-700 text-white shadow-lg p-0"
+          size="sm"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </Button>
+      )}
 
       {/* Footer */}
       <footer id="contact" className="bg-gray-900 text-white py-12">
@@ -575,7 +748,6 @@ export default function RestaurantMenu({ params }) {
                 )}
               </div>
             </div>
-
             {/* Contact Info */}
             <div>
               <h4 className="text-lg font-semibold mb-4">{t("contactInfo")}</h4>
