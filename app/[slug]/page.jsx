@@ -312,7 +312,7 @@ export default function RestaurantMenu({ params }) {
                     </Button>
                   </Link>
                 )}
-                <Link href={`/${restaurant.slug}/dashboard/manage`}>
+                {/* <Link href={`/${restaurant.slug}/dashboard/manage`}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -320,7 +320,7 @@ export default function RestaurantMenu({ params }) {
                   >
                     <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                </Link>
+                </Link> */}
               </div>
             </div>
             {/* Mobile Menu Dropdown */}
