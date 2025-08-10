@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, Store, ChefHat, Utensils } from "lucide-react";
+import { Users, Store, ChefHat } from "lucide-react";
 import { adminLogin, restaurantLogin } from "./actions";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -118,7 +118,7 @@ export default function AccessPage() {
                       required
                     />
                     <p className="text-xs text-gray-500">
-                      Test: name &#34;test&quot;, password &ldquo;123&quot;
+                      Test: name test, password 123
                     </p>
                   </div>
                   <Button
