@@ -1,46 +1,28 @@
-import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
-import RestaurantDashboardClient from "./restaurant-dashboard-client";
+"use client";
+import { useRouter } from "next/router";
 
-async function getRestaurantData(slug) {
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { slug, isActive: true },
-    include: {
-      categories: {
-        where: { isActive: true },
-        include: {
-          menuItems: {
-            where: { isActive: true },
-            orderBy: { sortOrder: "asc" },
-          },
-        },
-        orderBy: { sortOrder: "asc" },
-      },
-    },
-  });
+const ManagePage = () => {
+  const router = useRouter();
+  const { slug } = router.query;
+  const restaurant = { slug }; // Assuming restaurant data is fetched or passed here
 
-  // Convert Decimal prices to strings to avoid serialization issues
-  if (restaurant) {
-    restaurant.categories = restaurant.categories.map((category) => ({
-      ...category,
-      menuItems: category.menuItems.map((item) => ({
-        ...item,
-        price: item.price.toString(),
-        salePrice: item.salePrice ? item.salePrice.toString() : null, // Convert salePrice to string
-      })),
-    }));
-  }
+  return (
+    <div>
+      <h1>Manage Dashboard</h1>
+      <div>
+        <h2>Settings</h2>
+        <p>Your restaurant URL:</p>
+        <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
+          https://cq-menu.com/{restaurant.slug}
+        </code>
+        <p>Your dashboard URL:</p>
+        <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
+          https://cq-menu.com/{restaurant.slug}/dashboard/manage
+        </code>
+      </div>
+      {/* rest of code here */}
+    </div>
+  );
+};
 
-  return restaurant;
-}
-
-export default async function RestaurantManagement({ params }) {
-  const { slug } = params;
-  const restaurant = await getRestaurantData(slug);
-
-  if (!restaurant) {
-    notFound();
-  }
-
-  return <RestaurantDashboardClient restaurant={restaurant} />;
-}
+export default ManagePage;
