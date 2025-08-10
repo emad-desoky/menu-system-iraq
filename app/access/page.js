@@ -118,7 +118,7 @@ export default function AccessPage() {
                       required
                     />
                     <p className="text-xs text-gray-500">
-                      Test: name "test", password "123"
+                      Test: name &#34;test&quot;, password &ldquo;123&quot;
                     </p>
                   </div>
                   <Button
