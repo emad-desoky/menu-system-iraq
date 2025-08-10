@@ -11,7 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Store, Eye, LogOut, Trash2, Users } from "lucide-react";
+import {
+  Plus,
+  Store,
+  Eye,
+  LogOut,
+  Trash2,
+  Users,
+  Settings,
+} from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import { logout, createRestaurant, deleteRestaurant } from "./actions";
@@ -103,7 +111,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   />
                 </div>
               </div>
-
               <div>
                 <Label htmlFor="password">{t("restaurantPassword")}</Label>
                 <Input
@@ -115,7 +122,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   className="mt-1"
                 />
               </div>
-
               <div>
                 <Label htmlFor="slug">{t("subdomainSlug")}</Label>
                 <Input
@@ -128,10 +134,9 @@ export default function AdminDashboardClient({ restaurants }) {
                   className="mt-1"
                 />
                 <p className="text-xs text-gray-600 mt-1">
-                  سيكون هذا النطاق الفرعي: slug.yourdomain.com
+                  سيكون هذا النطاق الفرعي: cq-menu.com/slug
                 </p>
               </div>
-
               {/* Bilingual Description */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -169,7 +174,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">{t("email")}</Label>
@@ -191,7 +195,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   />
                 </div>
               </div>
-
               <div>
                 <Label htmlFor="address">{t("address")}</Label>
                 <Textarea
@@ -202,7 +205,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   className="mt-1"
                 />
               </div>
-
               {/* Google Maps and Social Media Links */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -233,7 +235,6 @@ export default function AdminDashboardClient({ restaurants }) {
                   />
                 </div>
               </div>
-
               <Button
                 type="submit"
                 className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
@@ -252,7 +253,6 @@ export default function AdminDashboardClient({ restaurants }) {
               {t("allRestaurants")} ({restaurants.length})
             </h2>
           </div>
-
           {restaurants.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
@@ -324,7 +324,7 @@ export default function AdminDashboardClient({ restaurants }) {
                       <div className="text-sm">
                         <span className="text-gray-600">الرابط:</span>
                         <code className="ml-2 px-2 py-1 bg-gray-100 rounded text-xs break-all">
-                          {restaurant.slug}.yourdomain.com
+                          cq-menu.com/{restaurant.slug}
                         </code>
                       </div>
                     </div>
@@ -338,6 +338,20 @@ export default function AdminDashboardClient({ restaurants }) {
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         عرض القائمة
+                      </Button>
+                      {/* ADDED SETTINGS BUTTON HERE */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-orange-600 text-orange-600 hover:bg-orange-50 bg-transparent"
+                        onClick={() =>
+                          window.open(
+                            `/${restaurant.slug}/dashboard/manage`,
+                            "_blank"
+                          )
+                        }
+                      >
+                        <Settings className="w-4 h-4" />
                       </Button>
                       <form action={deleteRestaurant}>
                         <input
