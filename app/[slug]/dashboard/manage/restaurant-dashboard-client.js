@@ -48,6 +48,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
   const [categoryImagePreview, setCategoryImagePreview] = useState(null);
+
   const { t, isRTL, language } = useLanguage();
 
   const getLocalizedText = (item, field) => {
@@ -328,7 +329,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </form>
                   </CardContent>
                 </Card>
-
                 {/* Categories List */}
                 <div className="space-y-4">
                   {restaurant.categories.map((category) => (
@@ -729,7 +729,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         </form>
                       </CardContent>
                     </Card>
-
                     {/* Menu Items List */}
                     <div className="space-y-6">
                       {restaurant.categories.map((category) => (
@@ -863,7 +862,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     name="restaurantId"
                     value={restaurant.id}
                   />
-
                   {/* Our Story - Bilingual with Image */}
                   <div className="border rounded-lg p-6 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
@@ -924,7 +922,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                     </div>
                   </div>
-
                   {/* Mission - Bilingual with Image */}
                   <div className="border rounded-lg p-6 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
@@ -985,7 +982,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                     </div>
                   </div>
-
                   {/* Vision - Bilingual with Image */}
                   <div className="border rounded-lg p-6 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
@@ -1046,7 +1042,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                     </div>
                   </div>
-
                   {/* Chef - Bilingual with Image */}
                   <div className="border rounded-lg p-6 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
@@ -1107,7 +1102,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                     </div>
                   </div>
-
                   {/* History - Bilingual with Image */}
                   <div className="border rounded-lg p-6 bg-gray-50">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
@@ -1168,7 +1162,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       </div>
                     </div>
                   </div>
-
                   {/* Google Maps and Social Media - Keep as before */}
                   <div>
                     <Label htmlFor="googleMapsUrl">{t("googleMapsUrl")}</Label>
@@ -1183,7 +1176,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       يمكنك استخدام رابط مباشر من خرائط جوجل أو رابط التضمين
                     </p>
                   </div>
-
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <Label
@@ -1218,7 +1210,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       />
                     </div>
                   </div>
-
                   <Button
                     type="submit"
                     className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto"
@@ -1405,7 +1396,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
             </Card>
           </TabsContent>
 
-          {/* Settings Tab */}
+          {/* Settings Tab - UPDATED WITH CORRECT DOMAIN */}
           <TabsContent value="settings">
             <Card>
               <CardHeader>
@@ -1424,7 +1415,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       {t("menuAvailableAt")}
                     </p>
                     <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
-                      https://{restaurant.slug}.yourdomain.com
+                      https://cq-menu.com/{restaurant.slug}
                     </code>
                   </div>
                   <div>
@@ -1435,7 +1426,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       {t("dashboardUrl")}
                     </p>
                     <code className="block mt-2 p-2 bg-gray-100 rounded text-sm">
-                      https://{restaurant.slug}.yourdomain.com/dashboard/manage
+                      https://cq-menu.com/{restaurant.slug}/dashboard/manage
                     </code>
                     <p className="text-xs text-gray-500 mt-2">
                       {t("password")}: {restaurant.password}
