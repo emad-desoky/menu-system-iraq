@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import {
   Card,
@@ -29,6 +30,9 @@ import {
   Languages,
   Facebook,
   Instagram,
+  Edit,
+  X,
+  Save,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,6 +45,8 @@ import {
   deleteMenuItem,
   updateAboutUs,
   updateAppearance,
+  updateCategory,
+  updateMenuItem,
 } from "./actions";
 
 export default function RestaurantDashboardClient({ restaurant }) {
@@ -48,6 +54,9 @@ export default function RestaurantDashboardClient({ restaurant }) {
   const [logoPreview, setLogoPreview] = useState(null);
   const [bannerImagePreview, setBannerImagePreview] = useState(null);
   const [categoryImagePreview, setCategoryImagePreview] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingMenuItem, setEditingMenuItem] = useState(null);
+  const [editImagePreviews, setEditImagePreviews] = useState({});
 
   const { t, isRTL, language } = useLanguage();
 
@@ -104,6 +113,54 @@ export default function RestaurantDashboardClient({ restaurant }) {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleEditImageChange = (e, id, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditImagePreviews((prev) => ({
+          ...prev,
+          [`${type}_${id}`]: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const startEditingCategory = (category) => {
+    setEditingCategory(category.id);
+    setEditImagePreviews((prev) => ({
+      ...prev,
+      [`category_${category.id}`]: category.image,
+    }));
+  };
+
+  const cancelEditingCategory = () => {
+    setEditingCategory(null);
+    setEditImagePreviews((prev) => {
+      const newPreviews = { ...prev };
+      delete newPreviews[`category_${editingCategory}`];
+      return newPreviews;
+    });
+  };
+
+  const startEditingMenuItem = (item) => {
+    setEditingMenuItem(item.id);
+    setEditImagePreviews((prev) => ({
+      ...prev,
+      [`menuitem_${item.id}`]: item.image,
+    }));
+  };
+
+  const cancelEditingMenuItem = () => {
+    setEditingMenuItem(null);
+    setEditImagePreviews((prev) => {
+      const newPreviews = { ...prev };
+      delete newPreviews[`menuitem_${editingMenuItem}`];
+      return newPreviews;
+    });
   };
 
   return (
@@ -329,6 +386,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                     </form>
                   </CardContent>
                 </Card>
+
                 {/* Categories List */}
                 <div className="space-y-4">
                   {restaurant.categories.map((category) => (
@@ -337,62 +395,224 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       className="hover:shadow-md transition-shadow"
                     >
                       <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 flex-1">
-                            {category.image && (
-                              <div className="w-16 h-16 rounded-lg overflow-hidden">
-                                <Image
-                                  src={category.image || "/placeholder.svg"}
-                                  alt={getLocalizedText(category, "name")}
-                                  width={64}
-                                  height={64}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                            <div>
-                              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                {getLocalizedText(category, "name")}
-                              </h3>
-                              {getLocalizedText(category, "description") && (
-                                <p className="text-gray-600 mb-3">
-                                  {getLocalizedText(category, "description")}
-                                </p>
-                              )}
-                              <div className="flex gap-2">
-                                <Badge
-                                  variant="outline"
-                                  className="bg-orange-50 text-orange-700 border-orange-200"
-                                >
-                                  {category.menuItems.length} {t("items")}
-                                </Badge>
-                                {category.nameAr && category.nameEn && (
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-green-50 text-green-700 border-green-200"
-                                  >
-                                    <Languages className="w-3 h-3 mr-1" />
-                                    {t("bilingual")}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <form action={deleteCategory}>
+                        {editingCategory === category.id ? (
+                          // Edit Form
+                          <form action={updateCategory} className="space-y-4">
                             <input
                               type="hidden"
                               name="categoryId"
                               value={category.id}
                             />
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              type="submit"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor={`edit-nameAr-${category.id}`}>
+                                  {t("categoryName")} (العربية)
+                                </Label>
+                                <Input
+                                  id={`edit-nameAr-${category.id}`}
+                                  name="nameAr"
+                                  defaultValue={category.nameAr || ""}
+                                  placeholder="اسم الفئة"
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`edit-nameEn-${category.id}`}>
+                                  {t("categoryName")} (English)
+                                </Label>
+                                <Input
+                                  id={`edit-nameEn-${category.id}`}
+                                  name="nameEn"
+                                  defaultValue={category.nameEn || ""}
+                                  placeholder="Category Name"
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              <div>
+                                <Label
+                                  htmlFor={`edit-descriptionAr-${category.id}`}
+                                >
+                                  {t("description")} (العربية)
+                                </Label>
+                                <Textarea
+                                  id={`edit-descriptionAr-${category.id}`}
+                                  name="descriptionAr"
+                                  defaultValue={category.descriptionAr || ""}
+                                  placeholder="وصف مختصر للفئة..."
+                                  className="mt-1"
+                                  rows={2}
+                                />
+                              </div>
+                              <div>
+                                <Label
+                                  htmlFor={`edit-descriptionEn-${category.id}`}
+                                >
+                                  {t("description")} (English)
+                                </Label>
+                                <Textarea
+                                  id={`edit-descriptionEn-${category.id}`}
+                                  name="descriptionEn"
+                                  defaultValue={category.descriptionEn || ""}
+                                  placeholder="Brief description..."
+                                  className="mt-1"
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <Label
+                                  htmlFor={`edit-sortOrder-${category.id}`}
+                                >
+                                  {t("sortOrder")}
+                                </Label>
+                                <Input
+                                  id={`edit-sortOrder-${category.id}`}
+                                  name="sortOrder"
+                                  type="number"
+                                  defaultValue={category.sortOrder || 0}
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`edit-image-${category.id}`}>
+                                  {t("categoryImage")}
+                                </Label>
+                                <div className="mt-1 flex items-center space-x-4">
+                                  <Input
+                                    id={`edit-image-${category.id}`}
+                                    name="image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) =>
+                                      handleEditImageChange(
+                                        e,
+                                        category.id,
+                                        "category"
+                                      )
+                                    }
+                                    className="flex-1"
+                                  />
+                                  {(editImagePreviews[
+                                    `category_${category.id}`
+                                  ] ||
+                                    category.image) && (
+                                    <div className="w-16 h-16 rounded-lg overflow-hidden border">
+                                      <Image
+                                        src={
+                                          editImagePreviews[
+                                            `category_${
+                                              category.id || "/placeholder.svg"
+                                            }`
+                                          ] ||
+                                          category.image ||
+                                          "/placeholder.svg"
+                                        }
+                                        alt="Category preview"
+                                        width={64}
+                                        height={64}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2">
+                              <Button
+                                type="submit"
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                                onClick={() => setEditingCategory(null)}
+                              >
+                                <Save className="w-4 h-4 mr-2" />
+                                {t("save")}
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelEditingCategory}
+                              >
+                                <X className="w-4 h-4 mr-2" />
+                                {t("cancel")}
+                              </Button>
+                            </div>
                           </form>
-                        </div>
+                        ) : (
+                          // Display Mode
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 flex-1">
+                              {category.image && (
+                                <div className="w-16 h-16 rounded-lg overflow-hidden">
+                                  <Image
+                                    src={category.image || "/placeholder.svg"}
+                                    alt={getLocalizedText(category, "name")}
+                                    width={64}
+                                    height={64}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                  {getLocalizedText(category, "name")}
+                                </h3>
+                                {getLocalizedText(category, "description") && (
+                                  <p className="text-gray-600 mb-3">
+                                    {getLocalizedText(category, "description")}
+                                  </p>
+                                )}
+                                <div className="flex gap-2">
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-orange-50 text-orange-700 border-orange-200"
+                                  >
+                                    {category.menuItems.length} {t("items")}
+                                  </Badge>
+                                  {category.nameAr && category.nameEn && (
+                                    <Badge
+                                      variant="outline"
+                                      className="bg-green-50 text-green-700 border-green-200"
+                                    >
+                                      <Languages className="w-3 h-3 mr-1" />
+                                      {t("bilingual")}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => startEditingCategory(category)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <form action={deleteCategory}>
+                                <input
+                                  type="hidden"
+                                  name="categoryId"
+                                  value={category.id}
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  type="submit"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </form>
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -729,6 +949,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                         </form>
                       </CardContent>
                     </Card>
+
                     {/* Menu Items List */}
                     <div className="space-y-6">
                       {restaurant.categories.map((category) => (
@@ -745,89 +966,381 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 key={item.id}
                                 className="hover:shadow-md transition-shadow"
                               >
-                                <div className="aspect-video bg-gray-100 relative">
-                                  {item.image ? (
-                                    <Image
-                                      src={item.image || "/placeholder.svg"}
-                                      alt={
-                                        item.imageAlt ||
-                                        getLocalizedText(item, "name")
-                                      }
-                                      fill
-                                      className="object-cover rounded-t-lg"
+                                {editingMenuItem === item.id ? (
+                                  // Edit Form for Menu Item
+                                  <form
+                                    action={updateMenuItem}
+                                    className="p-4 space-y-4"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="menuItemId"
+                                      value={item.id}
                                     />
-                                  ) : (
-                                    <div className="flex items-center justify-center h-full">
-                                      <ImageIcon className="w-12 h-12 text-gray-400" />
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-nameAr-${item.id}`}
+                                        >
+                                          {t("itemName")} (العربية)
+                                        </Label>
+                                        <Input
+                                          id={`edit-item-nameAr-${item.id}`}
+                                          name="nameAr"
+                                          defaultValue={item.nameAr || ""}
+                                          placeholder="اسم الطبق"
+                                          className="mt-1"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-nameEn-${item.id}`}
+                                        >
+                                          {t("itemName")} (English)
+                                        </Label>
+                                        <Input
+                                          id={`edit-item-nameEn-${item.id}`}
+                                          name="nameEn"
+                                          defaultValue={item.nameEn || ""}
+                                          placeholder="Dish Name"
+                                          className="mt-1"
+                                        />
+                                      </div>
                                     </div>
-                                  )}
-                                </div>
-                                <CardContent className="p-4">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <h4 className="font-semibold text-gray-900">
-                                      {getLocalizedText(item, "name")}
-                                    </h4>
-                                    <form action={deleteMenuItem}>
-                                      <input
-                                        type="hidden"
-                                        name="menuItemId"
-                                        value={item.id}
-                                      />
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-descriptionAr-${item.id}`}
+                                        >
+                                          {t("description")} (العربية)
+                                        </Label>
+                                        <Textarea
+                                          id={`edit-item-descriptionAr-${item.id}`}
+                                          name="descriptionAr"
+                                          defaultValue={
+                                            item.descriptionAr || ""
+                                          }
+                                          placeholder="وصف الطبق..."
+                                          className="mt-1"
+                                          rows={2}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-descriptionEn-${item.id}`}
+                                        >
+                                          {t("description")} (English)
+                                        </Label>
+                                        <Textarea
+                                          id={`edit-item-descriptionEn-${item.id}`}
+                                          name="descriptionEn"
+                                          defaultValue={
+                                            item.descriptionEn || ""
+                                          }
+                                          placeholder="Dish description..."
+                                          className="mt-1"
+                                          rows={2}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-price-${item.id}`}
+                                        >
+                                          {t("price")} (IQD)
+                                        </Label>
+                                        <Input
+                                          id={`edit-item-price-${item.id}`}
+                                          name="price"
+                                          type="number"
+                                          defaultValue={item.price}
+                                          className="mt-1"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-salePrice-${item.id}`}
+                                        >
+                                          {t("salePrice")} (IQD)
+                                        </Label>
+                                        <Input
+                                          id={`edit-item-salePrice-${item.id}`}
+                                          name="salePrice"
+                                          type="number"
+                                          defaultValue={item.salePrice || ""}
+                                          className="mt-1"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <Label
+                                        htmlFor={`edit-item-categoryId-${item.id}`}
+                                      >
+                                        {t("categories")}
+                                      </Label>
+                                      <Select
+                                        name="categoryId"
+                                        defaultValue={item.categoryId}
+                                      >
+                                        <SelectTrigger className="mt-1">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {restaurant.categories.map((cat) => (
+                                            <SelectItem
+                                              key={cat.id}
+                                              value={cat.id}
+                                            >
+                                              {getLocalizedText(cat, "name")}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-2">
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-isAvailable-${item.id}`}
+                                        >
+                                          {t("availability")}
+                                        </Label>
+                                        <Select
+                                          name="isAvailable"
+                                          defaultValue={item.isAvailable.toString()}
+                                        >
+                                          <SelectTrigger className="mt-1">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="true">
+                                              {t("available")}
+                                            </SelectItem>
+                                            <SelectItem value="false">
+                                              {t("notAvailable")}
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-isVegetarian-${item.id}`}
+                                        >
+                                          {t("vegetarian")}
+                                        </Label>
+                                        <Select
+                                          name="isVegetarian"
+                                          defaultValue={item.isVegetarian.toString()}
+                                        >
+                                          <SelectTrigger className="mt-1">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="true">
+                                              {t("yes")}
+                                            </SelectItem>
+                                            <SelectItem value="false">
+                                              {t("no")}
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Label
+                                          htmlFor={`edit-item-sortOrder-${item.id}`}
+                                        >
+                                          {t("sortOrder")}
+                                        </Label>
+                                        <Input
+                                          id={`edit-item-sortOrder-${item.id}`}
+                                          name="sortOrder"
+                                          type="number"
+                                          defaultValue={item.sortOrder || 0}
+                                          className="mt-1"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <Label
+                                        htmlFor={`edit-item-image-${item.id}`}
+                                      >
+                                        {t("itemImage")}
+                                      </Label>
+                                      <div className="mt-1 flex items-center space-x-4">
+                                        <Input
+                                          id={`edit-item-image-${item.id}`}
+                                          name="image"
+                                          type="file"
+                                          accept="image/*"
+                                          onChange={(e) =>
+                                            handleEditImageChange(
+                                              e,
+                                              item.id,
+                                              "menuitem"
+                                            )
+                                          }
+                                          className="flex-1"
+                                        />
+                                        {(editImagePreviews[
+                                          `menuitem_${item.id}`
+                                        ] ||
+                                          item.image) && (
+                                          <div className="w-16 h-16 rounded-lg overflow-hidden border">
+                                            <Image
+                                              src={
+                                                editImagePreviews[
+                                                  `menuitem_${
+                                                    item.id ||
+                                                    "/placeholder.svg"
+                                                  }`
+                                                ] ||
+                                                item.image ||
+                                                "/placeholder.svg"
+                                              }
+                                              alt="Item preview"
+                                              width={64}
+                                              height={64}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    <div className="flex gap-2">
                                       <Button
-                                        size="sm"
-                                        variant="destructive"
                                         type="submit"
+                                        size="sm"
+                                        className="bg-green-600 hover:bg-green-700"
+                                        onClick={() => setEditingMenuItem(null)}
                                       >
-                                        <Trash2 className="w-3 h-3" />
+                                        <Save className="w-4 h-4 mr-2" />
+                                        {t("save")}
                                       </Button>
-                                    </form>
-                                  </div>
-                                  {getLocalizedText(item, "description") && (
-                                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                      {getLocalizedText(item, "description")}
-                                    </p>
-                                  )}
-                                  <div className="flex flex-wrap gap-1 mb-2">
-                                    <Badge
-                                      variant="outline"
-                                      className="text-orange-600 border-orange-600"
-                                    >
-                                      {formatPrice(item.price)}
-                                    </Badge>
-                                    {item.salePrice && (
-                                      <Badge
+                                      <Button
+                                        type="button"
+                                        size="sm"
                                         variant="outline"
-                                        className="text-red-600 border-red-600"
+                                        onClick={cancelEditingMenuItem}
                                       >
-                                        {t("sale")}:{" "}
-                                        {formatPrice(item.salePrice)}
-                                      </Badge>
-                                    )}
-                                    <Badge
-                                      variant={
-                                        item.isAvailable
-                                          ? "default"
-                                          : "secondary"
-                                      }
-                                      className={
-                                        item.isAvailable ? "bg-green-600" : ""
-                                      }
-                                    >
-                                      {item.isAvailable
-                                        ? t("available")
-                                        : t("notAvailable")}
-                                    </Badge>
-                                    {item.nameAr && item.nameEn && (
-                                      <Badge
-                                        variant="outline"
-                                        className="bg-green-50 text-green-700 border-green-200"
-                                      >
-                                        <Languages className="w-3 h-3 mr-1" />
-                                        {t("bilingual")}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </CardContent>
+                                        <X className="w-4 h-4 mr-2" />
+                                        {t("cancel")}
+                                      </Button>
+                                    </div>
+                                  </form>
+                                ) : (
+                                  // Display Mode for Menu Item
+                                  <>
+                                    <div className="aspect-video bg-gray-100 relative">
+                                      {item.image ? (
+                                        <Image
+                                          src={item.image || "/placeholder.svg"}
+                                          alt={
+                                            item.imageAlt ||
+                                            getLocalizedText(item, "name")
+                                          }
+                                          fill
+                                          className="object-cover rounded-t-lg"
+                                        />
+                                      ) : (
+                                        <div className="flex items-center justify-center h-full">
+                                          <ImageIcon className="w-12 h-12 text-gray-400" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <CardContent className="p-4">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-semibold text-gray-900">
+                                          {getLocalizedText(item, "name")}
+                                        </h4>
+                                        <div className="flex gap-1">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() =>
+                                              startEditingMenuItem(item)
+                                            }
+                                          >
+                                            <Edit className="w-3 h-3" />
+                                          </Button>
+                                          <form action={deleteMenuItem}>
+                                            <input
+                                              type="hidden"
+                                              name="menuItemId"
+                                              value={item.id}
+                                            />
+                                            <Button
+                                              size="sm"
+                                              variant="destructive"
+                                              type="submit"
+                                            >
+                                              <Trash2 className="w-3 h-3" />
+                                            </Button>
+                                          </form>
+                                        </div>
+                                      </div>
+                                      {getLocalizedText(
+                                        item,
+                                        "description"
+                                      ) && (
+                                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                          {getLocalizedText(
+                                            item,
+                                            "description"
+                                          )}
+                                        </p>
+                                      )}
+                                      <div className="flex flex-wrap gap-1 mb-2">
+                                        <Badge
+                                          variant="outline"
+                                          className="text-orange-600 border-orange-600"
+                                        >
+                                          {formatPrice(item.price)}
+                                        </Badge>
+                                        {item.salePrice && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-red-600 border-red-600"
+                                          >
+                                            {t("sale")}:{" "}
+                                            {formatPrice(item.salePrice)}
+                                          </Badge>
+                                        )}
+                                        <Badge
+                                          variant={
+                                            item.isAvailable
+                                              ? "default"
+                                              : "secondary"
+                                          }
+                                          className={
+                                            item.isAvailable
+                                              ? "bg-green-600"
+                                              : ""
+                                          }
+                                        >
+                                          {item.isAvailable
+                                            ? t("available")
+                                            : t("notAvailable")}
+                                        </Badge>
+                                        {item.nameAr && item.nameEn && (
+                                          <Badge
+                                            variant="outline"
+                                            className="bg-green-50 text-green-700 border-green-200"
+                                          >
+                                            <Languages className="w-3 h-3 mr-1" />
+                                            {t("bilingual")}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </CardContent>
+                                  </>
+                                )}
                               </Card>
                             ))}
                           </div>
@@ -1297,6 +1810,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               logoPreview ||
                               restaurant.logo ||
                               "/placeholder.svg" ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg"
                             }
                             alt="Logo preview"
@@ -1357,6 +1871,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             src={
                               bannerImagePreview ||
                               restaurant.bannerImage ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg" ||
                               "/placeholder.svg"
                             }

@@ -1,4 +1,5 @@
 "use server";
+
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 
@@ -35,6 +36,48 @@ export async function createCategory(formData) {
     revalidatePath("/[slug]/dashboard/manage", "page");
   } catch (error) {
     console.error("Error creating category:", error);
+  }
+}
+
+export async function updateCategory(formData) {
+  const categoryId = formData.get("categoryId");
+
+  // Handle category image upload
+  const imageFile = formData.get("image");
+  let imageData = null;
+  if (imageFile && imageFile.size > 0) {
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString("base64");
+    const mimeType = imageFile.type;
+    imageData = `data:${mimeType};base64,${base64}`;
+  }
+
+  const data = {
+    name:
+      formData.get("nameAr") || formData.get("nameEn") || "Unnamed Category",
+    nameAr: formData.get("nameAr"),
+    nameEn: formData.get("nameEn"),
+    description:
+      formData.get("descriptionAr") || formData.get("descriptionEn") || null,
+    descriptionAr: formData.get("descriptionAr") || null,
+    descriptionEn: formData.get("descriptionEn") || null,
+    sortOrder: Number.parseInt(formData.get("sortOrder")) || 0,
+  };
+
+  // Only update image if a new one was uploaded
+  if (imageData) {
+    data.image = imageData;
+  }
+
+  try {
+    await prisma.category.update({
+      where: { id: categoryId },
+      data,
+    });
+    revalidatePath("/[slug]/dashboard/manage", "page");
+  } catch (error) {
+    console.error("Error updating category:", error);
   }
 }
 
@@ -91,6 +134,68 @@ export async function createMenuItem(formData) {
     revalidatePath("/[slug]", "page");
   } catch (error) {
     console.error("Error creating menu item:", error);
+  }
+}
+
+export async function updateMenuItem(formData) {
+  const menuItemId = formData.get("menuItemId");
+
+  // Handle base64 image storage
+  const imageFile = formData.get("image");
+  let imageData = null;
+  if (imageFile && imageFile.size > 0) {
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString("base64");
+    const mimeType = imageFile.type;
+    imageData = `data:${mimeType};base64,${base64}`;
+  }
+
+  const salePrice = formData.get("salePrice");
+  const salePriceValue =
+    salePrice && salePrice !== "" ? Number.parseFloat(salePrice) : null;
+
+  const data = {
+    name: formData.get("nameAr") || formData.get("nameEn") || "Unnamed Item",
+    nameAr: formData.get("nameAr"),
+    nameEn: formData.get("nameEn"),
+    description:
+      formData.get("descriptionAr") || formData.get("descriptionEn") || null,
+    descriptionAr: formData.get("descriptionAr") || null,
+    descriptionEn: formData.get("descriptionEn") || null,
+    price: Number.parseFloat(formData.get("price")),
+    salePrice: salePriceValue,
+    isAvailable: formData.get("isAvailable") === "true",
+    isVegetarian: formData.get("isVegetarian") === "true",
+    isVegan: formData.get("isVegan") === "true",
+    isGlutenFree: formData.get("isGlutenFree") === "true",
+    ingredients:
+      formData.get("ingredientsAr") || formData.get("ingredientsEn") || null,
+    ingredientsAr: formData.get("ingredientsAr") || null,
+    ingredientsEn: formData.get("ingredientsEn") || null,
+    allergens:
+      formData.get("allergensAr") || formData.get("allergensEn") || null,
+    allergensAr: formData.get("allergensAr") || null,
+    allergensEn: formData.get("allergensEn") || null,
+    sortOrder: Number.parseInt(formData.get("sortOrder")) || 0,
+    categoryId: formData.get("categoryId"),
+    imageAlt: formData.get("nameEn") || formData.get("nameAr"),
+  };
+
+  // Only update image if a new one was uploaded
+  if (imageData) {
+    data.image = imageData;
+  }
+
+  try {
+    await prisma.menuItem.update({
+      where: { id: menuItemId },
+      data,
+    });
+    revalidatePath("/[slug]/dashboard/manage", "page");
+    revalidatePath("/[slug]", "page");
+  } catch (error) {
+    console.error("Error updating menu item:", error);
   }
 }
 
