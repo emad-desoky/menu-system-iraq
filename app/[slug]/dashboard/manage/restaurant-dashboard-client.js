@@ -397,7 +397,13 @@ export default function RestaurantDashboardClient({ restaurant }) {
                       <CardContent className="p-6">
                         {editingCategory === category.id ? (
                           // Edit Form
-                          <form action={updateCategory} className="space-y-4">
+                          <form
+                            action={updateCategory}
+                            className="space-y-4"
+                            onSubmit={() => {
+                              setTimeout(() => setEditingCategory(null), 100);
+                            }}
+                          >
                             <input
                               type="hidden"
                               name="categoryId"
@@ -529,7 +535,6 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                 type="submit"
                                 size="sm"
                                 className="bg-green-600 hover:bg-green-700"
-                                onClick={() => setEditingCategory(null)}
                               >
                                 <Save className="w-4 h-4 mr-2" />
                                 {t("save")}
@@ -971,6 +976,12 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                   <form
                                     action={updateMenuItem}
                                     className="p-4 space-y-4"
+                                    onSubmit={() => {
+                                      setTimeout(
+                                        () => setEditingMenuItem(null),
+                                        100
+                                      );
+                                    }}
                                   >
                                     <input
                                       type="hidden"
@@ -1103,122 +1114,11 @@ export default function RestaurantDashboardClient({ restaurant }) {
                                       </Select>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-2">
-                                      <div>
-                                        <Label
-                                          htmlFor={`edit-item-isAvailable-${item.id}`}
-                                        >
-                                          {t("availability")}
-                                        </Label>
-                                        <Select
-                                          name="isAvailable"
-                                          defaultValue={item.isAvailable.toString()}
-                                        >
-                                          <SelectTrigger className="mt-1">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="true">
-                                              {t("available")}
-                                            </SelectItem>
-                                            <SelectItem value="false">
-                                              {t("notAvailable")}
-                                            </SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                      <div>
-                                        <Label
-                                          htmlFor={`edit-item-isVegetarian-${item.id}`}
-                                        >
-                                          {t("vegetarian")}
-                                        </Label>
-                                        <Select
-                                          name="isVegetarian"
-                                          defaultValue={item.isVegetarian.toString()}
-                                        >
-                                          <SelectTrigger className="mt-1">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="true">
-                                              {t("yes")}
-                                            </SelectItem>
-                                            <SelectItem value="false">
-                                              {t("no")}
-                                            </SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                      <div>
-                                        <Label
-                                          htmlFor={`edit-item-sortOrder-${item.id}`}
-                                        >
-                                          {t("sortOrder")}
-                                        </Label>
-                                        <Input
-                                          id={`edit-item-sortOrder-${item.id}`}
-                                          name="sortOrder"
-                                          type="number"
-                                          defaultValue={item.sortOrder || 0}
-                                          className="mt-1"
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div>
-                                      <Label
-                                        htmlFor={`edit-item-image-${item.id}`}
-                                      >
-                                        {t("itemImage")}
-                                      </Label>
-                                      <div className="mt-1 flex items-center space-x-4">
-                                        <Input
-                                          id={`edit-item-image-${item.id}`}
-                                          name="image"
-                                          type="file"
-                                          accept="image/*"
-                                          onChange={(e) =>
-                                            handleEditImageChange(
-                                              e,
-                                              item.id,
-                                              "menuitem"
-                                            )
-                                          }
-                                          className="flex-1"
-                                        />
-                                        {(editImagePreviews[
-                                          `menuitem_${item.id}`
-                                        ] ||
-                                          item.image) && (
-                                          <div className="w-16 h-16 rounded-lg overflow-hidden border">
-                                            <Image
-                                              src={
-                                                editImagePreviews[
-                                                  `menuitem_${
-                                                    item.id ||
-                                                    "/placeholder.svg"
-                                                  }`
-                                                ] ||
-                                                item.image ||
-                                                "/placeholder.svg"
-                                              }
-                                              alt="Item preview"
-                                              width={64}
-                                              height={64}
-                                              className="w-full h-full object-cover"
-                                            />
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-
                                     <div className="flex gap-2">
                                       <Button
                                         type="submit"
                                         size="sm"
                                         className="bg-green-600 hover:bg-green-700"
-                                        onClick={() => setEditingMenuItem(null)}
                                       >
                                         <Save className="w-4 h-4 mr-2" />
                                         {t("save")}
@@ -1811,6 +1711,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                               restaurant.logo ||
                               "/placeholder.svg" ||
                               "/placeholder.svg" ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg"
                             }
                             alt="Logo preview"
@@ -1871,6 +1772,7 @@ export default function RestaurantDashboardClient({ restaurant }) {
                             src={
                               bannerImagePreview ||
                               restaurant.bannerImage ||
+                              "/placeholder.svg" ||
                               "/placeholder.svg" ||
                               "/placeholder.svg" ||
                               "/placeholder.svg"
