@@ -60,7 +60,6 @@ export default function AccessPage() {
                       className="h-12"
                       required
                     />
-                    <p className="text-xs text-gray-500">Default: 123</p>
                   </div>
                   <Button
                     type="submit"
@@ -117,9 +116,7 @@ export default function AccessPage() {
                       className="h-12"
                       required
                     />
-                    <p className="text-xs text-gray-500">
-                      Test: name test, password 123
-                    </p>
+                    <p className="text-xs text-gray-500"></p>
                   </div>
                   <Button
                     type="submit"
