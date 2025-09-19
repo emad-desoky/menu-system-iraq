@@ -9,7 +9,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  Settings,
   Search,
   ShoppingCart,
   Facebook,
@@ -155,15 +154,6 @@ export default function RestaurantMenu({ params }) {
   if (!restaurant) {
     notFound();
   }
-
-  const bannerStyle = {
-    backgroundColor: restaurant.bannerColor || "#ea580c",
-    backgroundImage: restaurant.bannerImage
-      ? `url(${restaurant.bannerImage})`
-      : "none",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
 
   const overlayStyle = restaurant.bannerImage
     ? {
@@ -356,12 +346,25 @@ export default function RestaurantMenu({ params }) {
       </header>
 
       {/* Hero Section */}
-      <div
-        className="relative h-96 sm:h-64 lg:h-[700px] flex items-center justify-center"
-        style={bannerStyle}
-      >
+      <div className="relative h-96 sm:h-64 lg:h-[700px] flex items-center justify-center overflow-hidden">
+        {restaurant.bannerImage ? (
+          <Image
+            src={restaurant.bannerImage || "/placeholder.svg"}
+            alt={`${getLocalizedText(restaurant, "name")} banner`}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+            quality={85}
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: restaurant.bannerColor || "#ea580c" }}
+          />
+        )}
         <div style={overlayStyle} className="absolute inset-0"></div>
-        <div className="text-center text-white z-10 px-4">
+        <div className="text-center text-white z-10 px-4 relative">
           <h1 className="text-xl sm:text-2xl lg:text-5xl font-bold mb-2 lg:mb-4">
             {getLocalizedText(restaurant, "name")}
           </h1>
